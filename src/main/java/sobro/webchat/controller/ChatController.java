@@ -102,8 +102,10 @@ public class ChatController {
                     .type(ChatMessage.MessageType.LEAVE)
                     .sender(username)
                     .message(username + " 님 퇴장!!")
+                    .roomId(roomId)
                     .build();
-
+            System.out.println("나갈때왜이랭111 >  "+ chat.getRoomId());
+            System.out.println("나갈때왜이랭 >> " + repository.getTopic(chat.getRoomId()));
             redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
         }
     }
@@ -112,7 +114,7 @@ public class ChatController {
     @GetMapping("/chat/userlist")
     @ResponseBody
     public ArrayList<String> userList(String roomId) {
-
+        System.out.println("유저 리스트 반환 >>>>> " + roomId);
         return repository.getUserList(roomId);
     }
 

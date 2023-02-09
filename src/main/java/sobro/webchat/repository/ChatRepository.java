@@ -36,10 +36,6 @@ public class ChatRepository {
 
     private Map<String, ChatRoomDto> chatRoomMap;
 
-//    @PostConstruct
-//    private void init() {
-//        chatRoomMap = new LinkedHashMap<>();
-//    }
 
     /**
      * redis hash init
@@ -51,10 +47,11 @@ public class ChatRepository {
         topics = new HashMap<>();
     }
 
+    /**
+     * 모든 채팅방 리스트 확인
+     */
     public List<ChatRoomDto> findAllRoom() {
-        System.out.println("리턴전");
         List<ChatRoomDto> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
-        System.out.println("리턴후");
         return chatRooms;
     }
 
@@ -63,7 +60,14 @@ public class ChatRepository {
         return opsHashChatRoom.get(CHAT_ROOMS, id);
     }
 
-    // roomName 로 채팅방 만들기
+    /**
+     * 채팅방 생성
+     * @param roomName 방 이름
+     * @param roomPwd 방 비밀번호
+     * @param secretChk 방 잠금 여부
+     * @param maxUserCnt 방 최대 인원
+     * @return
+     */
     public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt){
         // roomName 와 roomPwd 로 chatRoom 빌드 후 return
 
@@ -93,30 +97,22 @@ public class ChatRepository {
         room.setUserCount(room.getUserCount()+1);
     }
 
-    // 채팅방 인원-1
-//    public void minusUserCnt(String roomId){
-//        ChatRoomDto room = chatRoomMap.get(roomId);
-//        room.setUserCount(room.getUserCount()-1);
-//    }
 
+    /**
+     * 채팅방 인원 -1
+     * @param roomId
+     */
     public void minusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
     }
 
-    // maxUserCnt 에 따른 채팅방 입장 여부
-//    public boolean chkRoomUserCnt(String roomId){
-//        ChatRoomDto room = chatRoomMap.get(roomId);
-//
-//        log.info("참여인원 확인 [{}, {}]", room.getUserCount(), room.getMaxUserCnt());
-//
-//        if (room.getUserCount() + 1 > room.getMaxUserCnt()) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
+    /**
+     * max 참여자 확인 및 입장 여부
+     * @param roomId
+     * @return
+     */
     public boolean chkRoomUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
 
@@ -129,17 +125,12 @@ public class ChatRepository {
         return true;
     }
 
-    // 채팅방 유저 리스트에 유저 추가
-//    public String addUser(String roomId, String userName){
-//        ChatRoomDto room = chatRoomMap.get(roomId);
-//        String userUUID = UUID.randomUUID().toString();
-//
-//        // 아이디 중복 확인 후 userList 에 추가
-//        room.getUserlist().put(userUUID, userName);
-//
-//        return userUUID;
-//    }
-
+    /**
+     * 채팅방 유저 리스트 추가
+     * @param roomId
+     * @param userName
+     * @return
+     */
     public String addUser(String roomId, String userName){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String userUUID = UUID.randomUUID().toString();
@@ -150,22 +141,12 @@ public class ChatRepository {
         return userUUID;
     }
 
-    // 채팅방 유저 이름 중복 확인
-//    public String isDuplicateName(String roomId, String username){
-//        ChatRoomDto room = chatRoomMap.get(roomId);
-//        String tmp = username;
-//
-//        // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
-//        // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-//        while(room.getUserlist().containsValue(tmp)){
-//            int ranNum = (int) (Math.random()*100)+1;
-//
-//            tmp = username+ranNum;
-//        }
-//
-//        return tmp;
-//    }
-
+    /**
+     * 채팅방 유저 닉네임 중복 체크
+     * @param roomId
+     * @param username
+     * @return
+     */
     public String isDuplicateName(String roomId, String username){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String tmp = username;

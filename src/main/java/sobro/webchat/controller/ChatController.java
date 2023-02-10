@@ -3,6 +3,7 @@ package sobro.webchat.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -13,6 +14,7 @@ import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.repository.ChatRoomRepository;
 import sobro.webchat.repository.RedisChatRoomRepository;
+import sobro.webchat.service.ChatService;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
 // @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다.
@@ -28,26 +30,23 @@ public class ChatController {
 
     private final RedisPublisher redisPublisher;
 
-    private final ChatRoomRepository repository;
+    private final ChatService chatService;
 
     /**
      * 채팅방 입장
      */
     @MessageMapping("/chat/enterUser")
     public void enterUser(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        // 채팅방 유저+1
-        repository.plusUserCnt(message.getRoomId());
 
         // 채팅방에 유저 추가 및 UserUUID 반환
-        String userUUID = repository.addUser(message.getRoomId(), message.getSender());
+        String userUUID = chatService.entranceUser(message.getRoomId(), message.getSender());
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
-
         message.setMessage(message.getSender() + " 님 입장!!");
-        repository.enterChatRoom(message.getRoomId());
 
-        redisPublisher.publish(repository.getTopic(message.getRoomId()), message);
+        ChannelTopic channelTopic = chatService.selectTopic(message.getRoomId());
+        redisPublisher.publish(channelTopic, message);
 
     }
 
@@ -58,7 +57,8 @@ public class ChatController {
     public void sendMessage(@Payload ChatMessage message) {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
-        redisPublisher.publish(repository.getTopic(message.getRoomId()), message);
+        ChannelTopic channelTopic = chatService.selectTopic(message.getRoomId());
+        redisPublisher.publish(channelTopic, message);
 
     }
 
@@ -75,12 +75,9 @@ public class ChatController {
 
         log.info("headAccessor {}", headerAccessor);
 
-        // 채팅방 유저 -1
-        repository.minusUserCnt(roomId);
 
         // 채팅방 유저 리스트에서 UUID 유저 닉네임 조회 및 리스트에서 유저 삭제
-        String username = repository.getUserName(roomId, userUUID);
-        repository.delUser(roomId, userUUID);
+        String username = chatService.userLeave(roomId, userUUID);
 
         if (username != null) {
             log.info("User Disconnected : " + username);
@@ -91,7 +88,8 @@ public class ChatController {
                     .message(username + " 님 퇴장!!")
                     .roomId(roomId)
                     .build();
-            redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
+            ChannelTopic channelTopic = chatService.selectTopic(chat.getRoomId());
+            redisPublisher.publish(channelTopic, chat);
         }
     }
 }

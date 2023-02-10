@@ -33,8 +33,6 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
 
-    private Map<String, ChatRoomDto> chatRoomMap;
-
 
     /**
      * redis hash init
@@ -163,7 +161,6 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
 
     @Override
     public boolean confirmPwd(String roomId, String roomPwd) {
-        System.out.println("옵니까~?");
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
     }

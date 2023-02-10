@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -24,10 +25,10 @@ public class ChatRoomDto implements Serializable {
     private String roomName; // 채팅방 이름 
     private int userCount; // 채팅방 인원수
     private int maxUserCnt; // 채팅방 최대 인원 제한
-
+    private String createRoomDate; // 채팅방 생성 날짜
     private String roomPwd; // 채팅방 삭제시 필요한 pwd
     private boolean secretChk; // 채팅방 잠금 여부
 
-    private HashMap<String, String> userlist;
+    private HashMap<String, String> userlist; //채팅방 입장 인원 리스트
 
 }

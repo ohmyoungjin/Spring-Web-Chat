@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import sobro.webchat.dto.ChatRoomDto;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import sobro.webchat.pubsub.RedisSubscriber;
@@ -57,6 +59,11 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
     @Override
     public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt){
         // roomName 와 roomPwd 로 chatRoom 빌드 후 return
+        // 현재 날짜 구하기
+        LocalDate now = LocalDate.now();
+        // 포맷 정의
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String formatedNow = now.format(formatter);
 
         ChatRoomDto chatRoomDto = ChatRoomDto.builder()
                 .roomId(UUID.randomUUID().toString())
@@ -66,6 +73,7 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
                 .userlist(new HashMap<String, String>())
                 .userCount(0) // 채팅방 참여 인원수
                 .maxUserCnt(maxUserCnt) // 최대 인원수 제한
+                .createRoomDate(formatedNow) //방 생성 날짜
                 .build();
         log.info("ChatDto={}" , chatRoomDto);
         // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장

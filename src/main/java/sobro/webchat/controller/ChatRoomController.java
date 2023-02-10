@@ -19,8 +19,10 @@ public class ChatRoomController {
 
     private final ChatRoomRepository repository;
 
-    // 채팅 리스트 화면
-    // / 로 요청이 들어오면 전체 채팅룸 리스트를 담아서 return
+    /**
+     * 채팅 리스트
+     * @param model
+     */
     @GetMapping("/")
     public String goChatRoom(Model model){
         model.addAttribute("list", repository.findAllRoom());
@@ -29,8 +31,13 @@ public class ChatRoomController {
         return "roomlist";
     }
 
-    // 채팅방 생성
-    // 채팅방 생성 후 다시 / 로 return
+    /**
+     * 채팅방 생성
+     * @param name 방 이름
+     * @param roomPwd 방 비밀번호
+     * @param secretChk 잠금 여부
+     * @param maxUserCnt 참여 인원
+     */
     @PostMapping("/chat/createroom")
     public String createRoom(@RequestParam("roomName") String name, @RequestParam("roomPwd")String roomPwd, @RequestParam("secretChk")String secretChk,
                              @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {

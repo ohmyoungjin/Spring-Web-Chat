@@ -244,11 +244,11 @@
                 <tr th:each="room : ${list}">
                     <span class="hidden" th:id="${room.roomName}"></span>
                     <td th:if="${room.secretChk}">
-                        <a href="#enterRoomModal" data-bs-toggle="modal" data-target="#enterRoomModal" th:data-id="${room.roomId}">first[[${room.roomName}]]</a>
+                        <a href="#enterRoomModal" data-bs-toggle="modal" data-target="#enterRoomModal" th:data-id="${room.roomId}">[[${room.roomName}]]</a>
                     </td>
                     <td th:if="${!room.secretChk}">
                         <!-- thymeleaf 의 변수를 onclick 에 넣는 방법 -->
-                        <a th:href="@{/chat/room(roomId=${room.roomId})}" th:roomId="${room.roomId}" onclick="return chkRoomUserCnt(this.getAttribute('roomId'));">second[[${room.roomName}]]</a>
+                        <a th:href="@{/chat/room(roomId=${room.roomId})}" th:roomId="${room.roomId}" onclick="return chkRoomUserCnt(this.getAttribute('roomId'));">[[${room.roomName}]]</a>
                     </td>
                     <td>
                         <span th:if="${room.secretChk}">

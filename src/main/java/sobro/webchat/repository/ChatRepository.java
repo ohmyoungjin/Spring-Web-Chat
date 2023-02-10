@@ -93,6 +93,7 @@ public class ChatRepository {
     public void plusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
+        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
 
@@ -103,6 +104,7 @@ public class ChatRepository {
     public void minusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
+        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
 
@@ -135,6 +137,7 @@ public class ChatRepository {
 
         //userList 에 추가
         room.getUserlist().put(userUUID, userName);
+        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
 
         return userUUID;
     }
@@ -162,13 +165,14 @@ public class ChatRepository {
 
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
-        ChatRoomDto room = chatRoomMap.get(roomId);
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.getUserlist().remove(userUUID);
+        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     // 채팅방 userName 조회
     public String getUserName(String roomId, String userUUID){
-        ChatRoomDto room = chatRoomMap.get(roomId);
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return room.getUserlist().get(userUUID);
     }
 
@@ -189,8 +193,6 @@ public class ChatRepository {
         System.out.println("옵니까~?");
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
-//        String pwd = chatRoomMap.get(roomId).getRoomPwd();
-        //return roomPwd.equals(chatRoomMap.get(roomId).getRoomPwd());
     }
 
     // 채팅방 삭제

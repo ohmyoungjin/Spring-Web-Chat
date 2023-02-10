@@ -28,6 +28,7 @@ const url = new URL(location.href).searchParams;
 const roomId = url.get('roomId');
 
 function connect(event) {
+    console.log("connect");
     username = document.querySelector('#name').value.trim();
 
     // username 중복 확인
@@ -51,7 +52,7 @@ function connect(event) {
 }
 
 function onConnected() {
-
+    console.log("onConnected");
     // sub 할 url => /sub/chat/room/roomId 로 구독한다
     stompClient.subscribe('/sub/chat/room/' + roomId, onMessageReceived);
 
@@ -72,7 +73,7 @@ function onConnected() {
 
 // 유저 닉네임 중복 확인
 function isDuplicateName() {
-
+    console.log("isDuplicateName");
     $.ajax({
         type: "GET",
         url: "/chat/duplicateName",
@@ -91,7 +92,8 @@ function isDuplicateName() {
 
 // 유저 리스트 받기
 // ajax 로 유저 리스를 받으며 클라이언트가 입장/퇴장 했다는 문구가 나왔을 때마다 실행된다.
-function getUserList(sender) {
+function getUserList() {
+    console.log("getUserList");
     const $list = $("#list");
 
     $.ajax({
@@ -111,7 +113,8 @@ function getUserList(sender) {
     })
 }
 
-function getTargetUserList(sender) {
+function getTargetUserList() {
+    console.log("getTargetUserList");
     const $targetId = $("#targetId");
 
     $.ajax({
@@ -124,7 +127,7 @@ function getTargetUserList(sender) {
             var targetUsers = "";
             targetUsers += "<option class='target' value='all'>모두</option>"
             for (let i = 0; i < data.length; i++) {
-                if(data[i] != sender){
+                if(data[i] != username){
                     targetUsers += "<option class='target' value='" + data[i] + "'>" + data[i] + "</option>"
                 }
             }
@@ -134,12 +137,14 @@ function getTargetUserList(sender) {
 }
 
 function onError(error) {
+    console.log("onError");
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
 // 메시지 전송때는 JSON 형식을 메시지를 전달한다.
 function sendMessage(event) {
+    console.log("");
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
@@ -159,6 +164,7 @@ function sendMessage(event) {
 // 메시지를 받을 때도 마찬가지로 JSON 타입으로 받으며,
 // 넘어온 JSON 형식의 메시지를 parse 해서 사용한다.
 function onMessageReceived(payload) {
+    console.log("onMessageReceived");
     var chat = JSON.parse(payload.body);
 
     var messageElement = document.createElement('li');
@@ -166,14 +172,14 @@ function onMessageReceived(payload) {
     if (chat.type === 'ENTER') {  // chatType 이 enter 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
-        getUserList(chat.sender);
-        getTargetUserList(chat.sender);
+        getUserList();
+        getTargetUserList();
 
     } else if (chat.type === 'LEAVE') { // chatType 가 leave 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
-        getUserList(chat.sender);
-        getTargetUserList(chat.sender);
+        getUserList();
+        getTargetUserList();
 
     } else { // chatType 이 talk 라면 아래 내용
         messageElement.classList.add('chat-message');
@@ -226,6 +232,7 @@ function onMessageReceived(payload) {
 
 
 function getAvatarColor(messageSender) {
+    console.log("getAvatarColor");
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
@@ -240,6 +247,7 @@ messageForm.addEventListener('submit', sendMessage, true)
 
 /// 파일 업로드 부분 ////
 function uploadFile(){
+    console.log("uploadFile");
     var file = $("#file")[0].files[0];
     var formData = new FormData();
     formData.append("file",file);

@@ -95,6 +95,7 @@ public class ChatRepository {
     public void plusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
+        System.out.println("roomUserCnt >> " + room.getUserCount());
     }
 
 
@@ -135,8 +136,9 @@ public class ChatRepository {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String userUUID = UUID.randomUUID().toString();
 
-        // 아이디 중복 확인 후 userList 에 추가
+        //userList 에 추가
         room.getUserlist().put(userUUID, userName);
+        System.out.println("유저 추가 룸 정보 >> " + room.toString());
 
         return userUUID;
     }
@@ -177,12 +179,16 @@ public class ChatRepository {
     // 채팅방 전체 userlist 조회
     public ArrayList<String> getUserList(String roomId){
         ArrayList<String> list = new ArrayList<>();
+        System.out.println("옵니깜~");
 
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-
+        log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
+        System.out.println("룸의 유저리스트 ?? >> " +  room.getUserlist());
+        System.out.println("룸의 유저리스트 ?? >> " +  room.getUserCount());
         room.getUserlist().forEach((key, value) -> list.add(value));
+        System.out.println("list size >> " + list.size());
         return list;
     }
 
@@ -198,15 +204,14 @@ public class ChatRepository {
     public void delChatRoom(String roomId) {
         try {
             // 채팅방 삭제
-            chatRoomMap.remove(roomId);
-
-            // 채팅방 안에 있는 파일 삭제
-//            fileService.deleteFileDir(roomId);
+            System.out.println("chatRepository.delChatRoom >> " + roomId);
+            ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+            redisTemplate.opsForHash().delete(CHAT_ROOMS, roomId);
 
             log.info("삭제 완료 roomId : {}", roomId);
 
         } catch (Exception e) { // 만약에 예외 발생시 확인하기 위해서 try catch
-            System.out.println(e.getMessage());
+            log.error("deleChatRoom error={}",e.getMessage());
         }
     }
 

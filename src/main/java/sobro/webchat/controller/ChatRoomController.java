@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,7 +24,6 @@ public class ChatRoomController {
     // / 로 요청이 들어오면 전체 채팅룸 리스트를 담아서 return
     @GetMapping("/")
     public String goChatRoom(Model model){
-        System.out.println("타긴하는건지..?");
         model.addAttribute("list", chatRepository.findAllRoom());
 
         log.info("SHOW ALL ChatList {}", chatRepository.findAllRoom());
@@ -38,7 +38,7 @@ public class ChatRoomController {
 
         // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
         ChatRoomDto room = chatRepository.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
-
+        //kafka topic 생성
         log.info("CREATE Chat Room [{}]", room);
 
         rttr.addFlashAttribute("roomName", room);
@@ -56,4 +56,11 @@ public class ChatRoomController {
         return "chatroom";
     }
 
+    @GetMapping("/chat/delRoom/{roomId}")
+    public String RoomDelete(Model model, @PathVariable String roomId){
+
+        log.info("delete roomId >> " + roomId);
+        chatRepository.delChatRoom(roomId);
+        return "redirect:/";
+    }
 }

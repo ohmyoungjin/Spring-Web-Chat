@@ -42,7 +42,6 @@ public class ChatRepository {
      */
     @PostConstruct
     private void init() {
-        System.out.println("여기먼저 타나요!?");
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
     }
@@ -83,7 +82,6 @@ public class ChatRepository {
         log.info("ChatDto={}" , chatRoomDto);
         // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장
         opsHashChatRoom.put(CHAT_ROOMS, chatRoomDto.getRoomId(), chatRoomDto);
-        System.out.println("방 만들어서 넣었습니다");
         return chatRoomDto;
     }
 
@@ -95,7 +93,6 @@ public class ChatRepository {
     public void plusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
-        System.out.println("roomUserCnt >> " + room.getUserCount());
     }
 
 
@@ -138,7 +135,6 @@ public class ChatRepository {
 
         //userList 에 추가
         room.getUserlist().put(userUUID, userName);
-        System.out.println("유저 추가 룸 정보 >> " + room.toString());
 
         return userUUID;
     }
@@ -179,16 +175,12 @@ public class ChatRepository {
     // 채팅방 전체 userlist 조회
     public ArrayList<String> getUserList(String roomId){
         ArrayList<String> list = new ArrayList<>();
-        System.out.println("옵니깜~");
 
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        System.out.println("룸의 유저리스트 ?? >> " +  room.getUserlist());
-        System.out.println("룸의 유저리스트 ?? >> " +  room.getUserCount());
         room.getUserlist().forEach((key, value) -> list.add(value));
-        System.out.println("list size >> " + list.size());
         return list;
     }
 
@@ -204,7 +196,6 @@ public class ChatRepository {
     public void delChatRoom(String roomId) {
         try {
             // 채팅방 삭제
-            System.out.println("chatRepository.delChatRoom >> " + roomId);
             ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
             redisTemplate.opsForHash().delete(CHAT_ROOMS, roomId);
 

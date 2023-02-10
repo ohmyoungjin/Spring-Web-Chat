@@ -49,16 +49,12 @@ public class ChatController {
      */
     @MessageMapping("/chat/enterUser")
     public void enterUser(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("옵니까 여기는?");
         // 채팅방 유저+1
-        System.out.println("입장시 최초 roomId >> " + message.getRoomId());
         repository.plusUserCnt(message.getRoomId());
 
         // 채팅방에 유저 추가 및 UserUUID 반환
         String userUUID = repository.addUser(message.getRoomId(), message.getSender());
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, userUUID);
-
-        System.out.println("user UUID >> " + userUUID);
 
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
@@ -122,7 +118,6 @@ public class ChatController {
     @GetMapping("/chat/userlist")
     @ResponseBody
     public ArrayList<String> userList(String roomId) {
-        System.out.println("오긴합니까");
         return repository.getUserList(roomId);
     }
 

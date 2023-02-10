@@ -11,17 +11,14 @@ import sobro.webchat.dto.ChatRoomDto;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+
 import sobro.webchat.pubsub.RedisSubscriber;
 
 // 추후 DB 와 연결 시 Service 와 Repository(DAO) 로 분리 예정
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class ChatRepository {
+public class RedisChatRoomRepository implements ChatRoomRepository{
 
     // 채팅방(topic)에 발행되는 메시지를 처리할 Listner
     private final RedisMessageListenerContainer redisMessageListener;
@@ -46,27 +43,18 @@ public class ChatRepository {
         topics = new HashMap<>();
     }
 
-    /**
-     * 모든 채팅방 리스트 확인
-     */
+    @Override
     public List<ChatRoomDto> findAllRoom() {
         List<ChatRoomDto> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
         return chatRooms;
     }
 
-
+    @Override
     public ChatRoomDto findRoomById(String id) {
         return opsHashChatRoom.get(CHAT_ROOMS, id);
     }
 
-    /**
-     * 채팅방 생성
-     * @param roomName 방 이름
-     * @param roomPwd 방 비밀번호
-     * @param secretChk 방 잠금 여부
-     * @param maxUserCnt 방 최대 인원
-     * @return
-     */
+    @Override
     public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt){
         // roomName 와 roomPwd 로 chatRoom 빌드 후 return
 
@@ -85,34 +73,21 @@ public class ChatRepository {
         return chatRoomDto;
     }
 
-
-    /**
-     * 채팅방 인원 +1
-     * @param roomId
-     */
+    @Override
     public void plusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
-
-    /**
-     * 채팅방 인원 -1
-     * @param roomId
-     */
+    @Override
     public void minusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
-
-    /**
-     * max 참여자 확인 및 입장 여부
-     * @param roomId
-     * @return
-     */
+    @Override
     public boolean chkRoomUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
 
@@ -125,12 +100,7 @@ public class ChatRepository {
         return true;
     }
 
-    /**
-     * 채팅방 유저 리스트 추가
-     * @param roomId
-     * @param userName
-     * @return
-     */
+    @Override
     public String addUser(String roomId, String userName){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String userUUID = UUID.randomUUID().toString();
@@ -142,12 +112,7 @@ public class ChatRepository {
         return userUUID;
     }
 
-    /**
-     * 채팅방 유저 닉네임 중복 체크
-     * @param roomId
-     * @param username
-     * @return
-     */
+    @Override
     public String isDuplicateName(String roomId, String username){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String tmp = username;
@@ -163,20 +128,20 @@ public class ChatRepository {
         return tmp;
     }
 
-    // 채팅방 유저 리스트 삭제
+    @Override
     public void delUser(String roomId, String userUUID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.getUserlist().remove(userUUID);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
-    // 채팅방 userName 조회
+    @Override
     public String getUserName(String roomId, String userUUID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return room.getUserlist().get(userUUID);
     }
 
-    // 채팅방 전체 userlist 조회
+    @Override
     public ArrayList<String> getUserList(String roomId){
         ArrayList<String> list = new ArrayList<>();
 
@@ -188,14 +153,14 @@ public class ChatRepository {
         return list;
     }
 
-    // 채팅방 비밀번호 조회
+    @Override
     public boolean confirmPwd(String roomId, String roomPwd) {
         System.out.println("옵니까~?");
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
     }
 
-    // 채팅방 삭제
+    @Override
     public void delChatRoom(String roomId) {
         try {
             // 채팅방 삭제
@@ -212,6 +177,7 @@ public class ChatRepository {
     /**
      * 채팅방 입장 : redis에 topic을 만들고 pub/sub 통신을 하기 위해 리스너를 설정한다.
      */
+    @Override
     public void enterChatRoom(String roomId) {
         ChannelTopic topic = topics.get(roomId);
         if (topic == null)
@@ -220,6 +186,7 @@ public class ChatRepository {
         topics.put(roomId, topic);
     }
 
+    @Override
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }

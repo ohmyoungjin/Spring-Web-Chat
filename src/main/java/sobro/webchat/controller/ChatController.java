@@ -3,23 +3,16 @@ package sobro.webchat.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import sobro.webchat.dto.ChatMessage;
-import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.pubsub.RedisPublisher;
-import sobro.webchat.repository.ChatRepository;
-
-import java.util.ArrayList;
+import sobro.webchat.repository.ChatRoomRepository;
+import sobro.webchat.repository.RedisChatRoomRepository;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
 // @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다.
@@ -35,9 +28,8 @@ public class ChatController {
 
     private final RedisPublisher redisPublisher;
 
-    private final ChatRepository repository;
+    private final ChatRoomRepository repository;
 
-    private static final String CHAT_ROOMS = "TEST_ROOM";
     /**
      * 채팅방 입장
      */
@@ -101,24 +93,5 @@ public class ChatController {
                     .build();
             redisPublisher.publish(repository.getTopic(chat.getRoomId()), chat);
         }
-    }
-
-    // 채팅에 참여한 유저 리스트 반환
-    @GetMapping("/chat/userlist")
-    @ResponseBody
-    public ArrayList<String> userList(String roomId) {
-        return repository.getUserList(roomId);
-    }
-
-    // 채팅에 참여한 유저 닉네임 중복 확인
-    @GetMapping("/chat/duplicateName")
-    @ResponseBody
-    public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
-
-        // 유저 이름 확인
-        String userName = repository.isDuplicateName(roomId, username);
-        log.info("동작확인 {}", userName);
-
-        return userName;
     }
 }

@@ -4,29 +4,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
-import sobro.webchat.repository.ChatRepository;
+import sobro.webchat.repository.ChatRoomRepository;
+import sobro.webchat.repository.RedisChatRoomRepository;
+
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Controller
 @Slf4j
 public class ChatRoomController {
 
-    // ChatRepository Bean 가져오기
-    private final ChatRepository chatRepository;
+    private final ChatRoomRepository repository;
 
     // 채팅 리스트 화면
     // / 로 요청이 들어오면 전체 채팅룸 리스트를 담아서 return
     @GetMapping("/")
     public String goChatRoom(Model model){
-        model.addAttribute("list", chatRepository.findAllRoom());
+        model.addAttribute("list", repository.findAllRoom());
 
-        log.info("SHOW ALL ChatList {}", chatRepository.findAllRoom());
+        log.info("SHOW ALL ChatList {}", repository.findAllRoom());
         return "roomlist";
     }
 
@@ -37,7 +36,7 @@ public class ChatRoomController {
                              @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {
 
         // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
-        ChatRoomDto room = chatRepository.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
+        ChatRoomDto room = repository.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
         //kafka topic 생성
         log.info("CREATE Chat Room [{}]", room);
 
@@ -52,15 +51,34 @@ public class ChatRoomController {
     public String roomDetail(Model model, String roomId){
 
         log.info("roomId {}", roomId);
-        model.addAttribute("room", chatRepository.findRoomById(roomId));
+        model.addAttribute("room", repository.findRoomById(roomId));
         return "chatroom";
+    }
+
+    // 채팅에 참여한 유저 리스트 반환
+    @GetMapping("/chat/userlist")
+    @ResponseBody
+    public ArrayList<String> userList(String roomId) {
+        return repository.getUserList(roomId);
+    }
+
+    // 채팅에 참여한 유저 닉네임 중복 확인
+    @GetMapping("/chat/duplicateName")
+    @ResponseBody
+    public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
+
+        // 유저 이름 확인
+        String userName = repository.isDuplicateName(roomId, username);
+        log.info("동작확인 {}", userName);
+
+        return userName;
     }
 
     @GetMapping("/chat/delRoom/{roomId}")
     public String RoomDelete(Model model, @PathVariable String roomId){
 
         log.info("delete roomId >> " + roomId);
-        chatRepository.delChatRoom(roomId);
+        repository.delChatRoom(roomId);
         return "redirect:/";
     }
 }

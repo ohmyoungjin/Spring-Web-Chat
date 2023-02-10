@@ -11,6 +11,10 @@ import sobro.webchat.dto.ChatRoomDto;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import sobro.webchat.pubsub.RedisSubscriber;
 
 // 추후 DB 와 연결 시 Service 와 Repository(DAO) 로 분리 예정
@@ -89,7 +93,6 @@ public class ChatRepository {
     public void plusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
-        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
 
@@ -100,7 +103,6 @@ public class ChatRepository {
     public void minusUserCnt(String roomId){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
-        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
 
@@ -131,9 +133,9 @@ public class ChatRepository {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String userUUID = UUID.randomUUID().toString();
 
-        // 아이디 중복 확인 후 userList 에 추가
+        //userList 에 추가
         room.getUserlist().put(userUUID, userName);
-        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
+
         return userUUID;
     }
 
@@ -160,21 +162,24 @@ public class ChatRepository {
 
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoomDto room = chatRoomMap.get(roomId);
         room.getUserlist().remove(userUUID);
-        opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     // 채팅방 userName 조회
     public String getUserName(String roomId, String userUUID){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoomDto room = chatRoomMap.get(roomId);
         return room.getUserlist().get(userUUID);
     }
 
     // 채팅방 전체 userlist 조회
     public ArrayList<String> getUserList(String roomId){
         ArrayList<String> list = new ArrayList<>();
+
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        log.info("UserList >>> {}", room);
+        // hashmap 을 for 문을 돌린 후
+        // value 값만 뽑아내서 list 에 저장 후 reutrn
         room.getUserlist().forEach((key, value) -> list.add(value));
         return list;
     }
@@ -184,23 +189,21 @@ public class ChatRepository {
         System.out.println("옵니까~?");
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
+//        String pwd = chatRoomMap.get(roomId).getRoomPwd();
+        //return roomPwd.equals(chatRoomMap.get(roomId).getRoomPwd());
     }
 
     // 채팅방 삭제
     public void delChatRoom(String roomId) {
         try {
             // 채팅방 삭제
-            chatRoomMap.remove(roomId);
             ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-            opsHashChatRoom.delete(roomId, room);
-
-            // 채팅방 안에 있는 파일 삭제
-//            fileService.deleteFileDir(roomId);
+            redisTemplate.opsForHash().delete(CHAT_ROOMS, roomId);
 
             log.info("삭제 완료 roomId : {}", roomId);
 
         } catch (Exception e) { // 만약에 예외 발생시 확인하기 위해서 try catch
-            System.out.println(e.getMessage());
+            log.error("deleChatRoom error={}",e.getMessage());
         }
     }
 

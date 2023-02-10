@@ -3,6 +3,7 @@ package sobro.webchat.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import sobro.webchat.dto.ChatMessage;
+import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.repository.ChatRepository;
 
@@ -39,6 +41,9 @@ public class ChatController {
 
     private final ChatRepository repository;
 
+    private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
+
+    private static final String CHAT_ROOMS = "TEST_ROOM";
     /**
      * 채팅방 입장
      */
@@ -49,6 +54,7 @@ public class ChatController {
 
         // 채팅방에 유저 추가 및 UserUUID 반환
         String userUUID = repository.addUser(message.getRoomId(), message.getSender());
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, userUUID);
 
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
@@ -69,6 +75,7 @@ public class ChatController {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
         //template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+        //db 저장을 하게되지않을까? kafka api를 날린다거나?
         redisPublisher.publish(repository.getTopic(message.getRoomId()), message);
 
     }

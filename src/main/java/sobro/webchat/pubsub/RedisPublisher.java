@@ -12,6 +12,11 @@ public class RedisPublisher {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * MessageTemplate => redisTemplate 변경
+     * @param topic
+     * @param message
+     */
     public void publish(ChannelTopic topic, ChatMessage message) {
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }

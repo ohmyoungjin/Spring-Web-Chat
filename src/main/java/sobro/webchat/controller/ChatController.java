@@ -41,8 +41,6 @@ public class ChatController {
 
     private final ChatRepository repository;
 
-    private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
-
     private static final String CHAT_ROOMS = "TEST_ROOM";
     /**
      * 채팅방 입장
@@ -54,8 +52,6 @@ public class ChatController {
 
         // 채팅방에 유저 추가 및 UserUUID 반환
         String userUUID = repository.addUser(message.getRoomId(), message.getSender());
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, userUUID);
-
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
@@ -75,7 +71,6 @@ public class ChatController {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
         //template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
-        //db 저장을 하게되지않을까? kafka api를 날린다거나?
         redisPublisher.publish(repository.getTopic(message.getRoomId()), message);
 
     }
@@ -103,7 +98,6 @@ public class ChatController {
         if (username != null) {
             log.info("User Disconnected : " + username);
 
-            // builder 어노테이션 활용
             ChatMessage chat = ChatMessage.builder()
                     .type(ChatMessage.MessageType.LEAVE)
                     .sender(username)

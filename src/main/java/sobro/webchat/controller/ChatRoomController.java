@@ -9,15 +9,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.repository.ChatRoomRepository;
 import sobro.webchat.repository.RedisChatRoomRepository;
+import sobro.webchat.service.ChatRoomService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @Slf4j
 public class ChatRoomController {
 
-    private final ChatRoomRepository repository;
+    private final ChatRoomService chatRoomService;
 
     /**
      * 채팅 리스트
@@ -25,9 +27,10 @@ public class ChatRoomController {
      */
     @GetMapping("/")
     public String goChatRoom(Model model){
-        model.addAttribute("list", repository.findAllRoom());
+        List<ChatRoomDto> roomList = chatRoomService.roomList();
+        model.addAttribute("list", roomList);
 
-        log.info("SHOW ALL ChatList {}", repository.findAllRoom());
+        log.info("SHOW ALL ChatList {}", roomList);
         return "roomlist";
     }
 
@@ -43,8 +46,8 @@ public class ChatRoomController {
                              @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {
 
         // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
-        ChatRoomDto room = repository.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
-        //kafka topic 생성
+        ChatRoomDto room = chatRoomService.createRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
+
         log.info("CREATE Chat Room [{}]", room);
 
         rttr.addFlashAttribute("roomName", room);
@@ -56,9 +59,9 @@ public class ChatRoomController {
     // 채팅방을 찾아서 클라이언트를 chatroom 으로 보낸다.
     @GetMapping("/chat/room")
     public String roomDetail(Model model, String roomId){
-
+        ChatRoomDto room = chatRoomService.chatRoomDetail(roomId);
         log.info("roomId {}", roomId);
-        model.addAttribute("room", repository.findRoomById(roomId));
+        model.addAttribute("room", room);
         return "chatroom";
     }
 
@@ -66,7 +69,7 @@ public class ChatRoomController {
     @GetMapping("/chat/userlist")
     @ResponseBody
     public ArrayList<String> userList(String roomId) {
-        return repository.getUserList(roomId);
+        return chatRoomService.chatUserList(roomId);
     }
 
     // 채팅에 참여한 유저 닉네임 중복 확인
@@ -75,7 +78,7 @@ public class ChatRoomController {
     public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
 
         // 유저 이름 확인
-        String userName = repository.isDuplicateName(roomId, username);
+        String userName = chatRoomService.DuplicateName(roomId, username);
         log.info("동작확인 {}", userName);
 
         return userName;
@@ -83,9 +86,8 @@ public class ChatRoomController {
 
     @GetMapping("/chat/delRoom/{roomId}")
     public String RoomDelete(Model model, @PathVariable String roomId){
-
-        log.info("delete roomId >> " + roomId);
-        repository.delChatRoom(roomId);
+        chatRoomService.roomDelete(roomId);
+        log.info("채팅방 삭제={}", roomId);
         return "redirect:/";
     }
 }

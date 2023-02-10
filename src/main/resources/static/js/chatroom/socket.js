@@ -91,7 +91,7 @@ function isDuplicateName() {
 
 // 유저 리스트 받기
 // ajax 로 유저 리스를 받으며 클라이언트가 입장/퇴장 했다는 문구가 나왔을 때마다 실행된다.
-function getUserList() {
+function getUserList(sender) {
     const $list = $("#list");
 
     $.ajax({
@@ -111,6 +111,27 @@ function getUserList() {
     })
 }
 
+function getTargetUserList(sender) {
+    const $targetId = $("#targetId");
+
+    $.ajax({
+        type: "GET",
+        url: "/chat/userlist",
+        data: {
+            "roomId": roomId
+        },
+        success: function (data) {
+            var targetUsers = "";
+            targetUsers += "<option class='target' value='all'>모두</option>"
+            for (let i = 0; i < data.length; i++) {
+                if(data[i] != sender){
+                    targetUsers += "<option class='target' value='" + data[i] + "'>" + data[i] + "</option>"
+                }
+            }
+            $targetId.html(targetUsers)
+        }
+    })
+}
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
@@ -145,12 +166,14 @@ function onMessageReceived(payload) {
     if (chat.type === 'ENTER') {  // chatType 이 enter 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
-        getUserList();
+        getUserList(chat.sender);
+        getTargetUserList(chat.sender);
 
     } else if (chat.type === 'LEAVE') { // chatType 가 leave 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
-        getUserList();
+        getUserList(chat.sender);
+        getTargetUserList(chat.sender);
 
     } else { // chatType 이 talk 라면 아래 내용
         messageElement.classList.add('chat-message');

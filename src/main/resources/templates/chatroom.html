@@ -37,6 +37,13 @@
         .input-group{width:80.5%}
         .chat-container{position: relative;}
         .chat-container .btn-group{position:absolute; bottom:-12px; right:-50px; transform: translate(-50%,-50%);}
+        #targetId {
+            height: 39px;
+            margin: 15px 0px 0px 5px;
+        }
+        .input-group.clearfix #message {
+            width: 350px;
+        }
     </style>
 </head>
 <body>
@@ -88,11 +95,8 @@
                 <div class="input-group clearfix">
                     <input type="text" id="message" placeholder="Type a message..." autocomplete="off"
                            class="form-control"/>
-                    <select class="target">
-                        <option class="target" value="all">모두</option>
-                        <option class="target" > </option>
-                        <option class="target"> </option>
-                        <option class="target"> </option>
+                    <select id="targetId" class="target">
+
                     </select>
                     <button type="submit" class="primary">Send</button>
                 </div>

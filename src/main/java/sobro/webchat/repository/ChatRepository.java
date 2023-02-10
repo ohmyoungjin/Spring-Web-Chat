@@ -181,6 +181,7 @@ public class ChatRepository {
 
     // 채팅방 비밀번호 조회
     public boolean confirmPwd(String roomId, String roomPwd) {
+        System.out.println("옵니까~?");
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
     }

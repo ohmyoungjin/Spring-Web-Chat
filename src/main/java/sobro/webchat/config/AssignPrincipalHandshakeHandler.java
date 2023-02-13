@@ -15,9 +15,6 @@ public class AssignPrincipalHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         String name = UUID.randomUUID().toString();
-        log.info("request={}", request.toString());
-        log.info("WebSocketHandler={}", wsHandler.toString());
-
         return new StompPrincipal(name);
         }
     }

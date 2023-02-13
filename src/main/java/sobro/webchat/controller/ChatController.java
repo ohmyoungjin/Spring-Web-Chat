@@ -38,7 +38,7 @@ public class ChatController {
      * 채팅방 입장
      */
     @MessageMapping("/chat/enterUser")
-    public void enterUser(Principal  principal, @Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public void enterUser(Principal principal, @Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
 
         String UUID = principal.getName();
         // 채팅방에 유저 추가 및 UserUUID 반환
@@ -47,7 +47,6 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
         message.setMessage(message.getSender() + " 님 입장!!");
-        log.info("headAccessor {}", headerAccessor);
         chatService.sendMessage(message.getRoomId(), message);
     }
 

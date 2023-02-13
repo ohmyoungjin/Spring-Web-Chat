@@ -58,7 +58,7 @@ function onConnected() {
     // sub 할 url => /sub/chat/room/roomId 로 구독한다
     stompClient.subscribe('/sub/chat/room/' + roomId, onMessageReceived);
     // 귓속말 할 url
-    stompClient.subscribe('/user/queue/wishes', onMessageReceived);
+    stompClient.subscribe('/user/queue', onMessageReceived);
     // 서버에 username 을 가진 유저가 들어왔다는 것을 알림
     // /pub/chat/enterUser 로 메시지를 보냄
     stompClient.send("/pub/chat/enterUser",

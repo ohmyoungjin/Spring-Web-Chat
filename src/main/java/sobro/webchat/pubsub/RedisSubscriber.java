@@ -42,7 +42,7 @@ public class RedisSubscriber implements MessageListener {
             log.info("roomMessage.getTargetId={}", roomMessage.getTargetId());
             if (roomMessage.getTargetId() != null) {
                 log.info("여기로 넘어오는데?");
-                messagingTemplate.convertAndSendToUser(roomMessage.getTargetId(), "/queue/wishes", roomMessage);
+                messagingTemplate.convertAndSendToUser(roomMessage.getTargetId(), "/queue", roomMessage);
             } else {
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), roomMessage);
             }

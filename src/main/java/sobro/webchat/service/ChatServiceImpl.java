@@ -4,34 +4,34 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
-import sobro.webchat.repository.ChatRoomRepository;
+import sobro.webchat.dto.ChatMessage;
+import sobro.webchat.repository.ChatRepository;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService{
 
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRepository chatRepository;
 
     @Override
     public String entranceUser(String roomId, String sender) {
-        chatRoomRepository.enterChatRoom(roomId);
-        String userUUID = chatRoomRepository.addUser(roomId, sender);
-        chatRoomRepository.plusUserCnt(roomId);
+        chatRepository.enterChatRoom(roomId);
+        String userUUID = chatRepository.addUser(roomId, sender);
+        chatRepository.plusUserCnt(roomId);
         return userUUID;
     }
 
     @Override
-    public ChannelTopic selectTopic(String roomId) {
-        ChannelTopic topic = chatRoomRepository.getTopic(roomId);
-        return topic;
+    public void sendMessage(String roomId, ChatMessage chatMessage) {
+        chatRepository.sendMessage(roomId, chatMessage);
     }
 
     @Override
     public String userLeave(String roomId, String userId) {
-        chatRoomRepository.minusUserCnt(roomId);
-        String userName = chatRoomRepository.getUserName(roomId, userId);
-        chatRoomRepository.delUser(roomId, userId);
+        chatRepository.minusUserCnt(roomId);
+        String userName = chatRepository.getUserName(roomId, userId);
+        chatRepository.delUser(roomId, userId);
         return userName;
     }
 }

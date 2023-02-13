@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sobro.webchat.dto.ChatRoomDto;
-import sobro.webchat.repository.ChatRoomRepository;
+import sobro.webchat.repository.ChatRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,35 +14,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService{
 
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRepository chatRepository;
 
     @Override
     public List<ChatRoomDto> roomList() {
-        return chatRoomRepository.findAllRoom();
+        return chatRepository.findAllRoom();
     }
 
     @Override
     public ChatRoomDto createRoom(String roomName, String roomPwd, boolean secret, int maxUserCnt) {
-        return chatRoomRepository.createChatRoom(roomName, roomPwd, secret, maxUserCnt);
+        return chatRepository.createChatRoom(roomName, roomPwd, secret, maxUserCnt);
     }
 
     @Override
     public ChatRoomDto chatRoomDetail(String roomId) {
-        return chatRoomRepository.findRoomById(roomId);
+        return chatRepository.findRoomById(roomId);
     }
 
     @Override
     public ArrayList<String> chatUserList(String roomId) {
-        return chatRoomRepository.getUserList(roomId);
+        return chatRepository.getUserList(roomId);
     }
 
     @Override
     public String DuplicateName(String roomId, String userName) {
-        return chatRoomRepository.isDuplicateName(roomId, userName);
+        return chatRepository.isDuplicateName(roomId, userName);
     }
 
     @Override
     public void roomDelete(String roomId) {
-        chatRoomRepository.delChatRoom(roomId);
+        chatRepository.delChatRoom(roomId);
     }
 }

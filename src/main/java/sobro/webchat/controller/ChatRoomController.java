@@ -7,8 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
-import sobro.webchat.repository.ChatRoomRepository;
-import sobro.webchat.repository.RedisChatRoomRepository;
 import sobro.webchat.service.ChatRoomService;
 
 import java.util.ArrayList;

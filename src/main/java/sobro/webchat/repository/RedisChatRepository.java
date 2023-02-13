@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
+import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomDto;
 
 import javax.annotation.PostConstruct;
@@ -14,13 +15,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.pubsub.RedisSubscriber;
 
 // 추후 DB 와 연결 시 Service 와 Repository(DAO) 로 분리 예정
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class RedisChatRoomRepository implements ChatRoomRepository{
+public class RedisChatRepository implements ChatRepository {
 
     // 채팅방(topic)에 발행되는 메시지를 처리할 Listner
     private final RedisMessageListenerContainer redisMessageListener;
@@ -32,6 +34,8 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
     private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
+    //message 전달 template 정보를 가진 class
+    private final RedisPublisher redisPublisher;
 
 
     /**
@@ -194,5 +198,11 @@ public class RedisChatRoomRepository implements ChatRoomRepository{
     @Override
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
+    }
+
+    @Override
+    public void sendMessage(String roomId, ChatMessage message) {
+        ChannelTopic topic = getTopic(roomId);
+        redisPublisher.publish(topic, message);
     }
 }

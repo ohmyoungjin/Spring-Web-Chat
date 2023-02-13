@@ -1,6 +1,7 @@
 package sobro.webchat.service;
 
 import org.springframework.data.redis.listener.ChannelTopic;
+import sobro.webchat.dto.ChatMessage;
 
 public interface ChatService {
 
@@ -14,11 +15,11 @@ public interface ChatService {
 
 
     /**
-     * 접속해있는 Redis Topic 구하기
+     * 메세지 보내기
      * @param roomId
      * @return
      */
-    ChannelTopic selectTopic(String roomId);
+    void sendMessage(String roomId, ChatMessage chatMessage);
 
     /**
      * 채팅방 퇴장

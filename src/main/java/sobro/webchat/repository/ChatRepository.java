@@ -1,12 +1,13 @@
 package sobro.webchat.repository;
 
 import org.springframework.data.redis.listener.ChannelTopic;
+import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ChatRoomRepository {
+public interface ChatRepository {
     /**
      * 모든 채팅방 리스트 확인
      */
@@ -105,5 +106,12 @@ public interface ChatRoomRepository {
      * @return
      */
     ChannelTopic getTopic(String roomId);
+
+    /**
+     * 채팅 보내기
+     * @param roomId
+     * @param message
+     */
+    void sendMessage(String roomId, ChatMessage message);
 
 }

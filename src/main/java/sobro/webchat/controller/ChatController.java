@@ -12,8 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.pubsub.RedisPublisher;
-import sobro.webchat.repository.ChatRoomRepository;
-import sobro.webchat.repository.RedisChatRoomRepository;
 import sobro.webchat.service.ChatService;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
@@ -27,8 +25,6 @@ import sobro.webchat.service.ChatService;
 @RequiredArgsConstructor
 @Controller
 public class ChatController {
-
-    private final RedisPublisher redisPublisher;
 
     private final ChatService chatService;
 
@@ -45,9 +41,7 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
         message.setMessage(message.getSender() + " 님 입장!!");
 
-        ChannelTopic channelTopic = chatService.selectTopic(message.getRoomId());
-        redisPublisher.publish(channelTopic, message);
-
+        chatService.sendMessage(message.getRoomId(), message);
     }
 
     /**
@@ -57,9 +51,7 @@ public class ChatController {
     public void sendMessage(@Payload ChatMessage message) {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
-        ChannelTopic channelTopic = chatService.selectTopic(message.getRoomId());
-        redisPublisher.publish(channelTopic, message);
-
+        chatService.sendMessage(message.getRoomId(), message);
     }
 
     // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
@@ -88,8 +80,7 @@ public class ChatController {
                     .message(username + " 님 퇴장!!")
                     .roomId(roomId)
                     .build();
-            ChannelTopic channelTopic = chatService.selectTopic(chat.getRoomId());
-            redisPublisher.publish(channelTopic, chat);
+            chatService.sendMessage(chat.getRoomId(), chat);
         }
     }
 }

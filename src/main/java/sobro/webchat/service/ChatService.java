@@ -29,4 +29,8 @@ public interface ChatService {
      */
     String userLeave(String roomId, String userId);
 
+    /**
+     * 귓속말 보내기
+     */
+    void whisper(String roomId, String targetId, ChatMessage chatMessage);
 }

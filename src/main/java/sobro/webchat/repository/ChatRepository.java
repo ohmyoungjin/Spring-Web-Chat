@@ -114,4 +114,8 @@ public interface ChatRepository {
      */
     void sendMessage(String roomId, ChatMessage message);
 
+    /**
+     * 귓속말 보내기
+     */
+    void whisper(String roomId, String targetId, ChatMessage chatMessage);
 }

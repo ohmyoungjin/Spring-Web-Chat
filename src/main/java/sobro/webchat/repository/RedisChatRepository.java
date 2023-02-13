@@ -210,9 +210,12 @@ public class RedisChatRepository implements ChatRepository {
         redisPublisher.publish(topic, message);
     }
 
-    public String whisper(String roomId, String targetId) {
+    @Override
+    public void whisper(String roomId, String targetId, ChatMessage message) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        //상대방한테 보내기
         String whisperId = room.getUserlist().get(targetId);
-        return whisperId;
+        message.setTargetId(whisperId);
+        sendMessage(roomId, message);
     }
 }

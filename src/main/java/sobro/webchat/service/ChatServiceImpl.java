@@ -34,4 +34,11 @@ public class ChatServiceImpl implements ChatService{
         chatRepository.delUser(roomId, userId);
         return userName;
     }
+
+    @Override
+    public void whisper(String roomId, String targetId, ChatMessage chatMessage) {
+        chatRepository.whisper(roomId, targetId, chatMessage);
+    }
+
+
 }

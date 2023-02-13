@@ -58,10 +58,7 @@ public class ChatController {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
         if(message.getType() == ChatMessage.MessageType.WHISPER) {
-            System.out.println("귓속말 입니까 ~?");
-            String whisperId = chatRepository.whisper(message.getRoomId(), message.getTargetId());
-            message.setTargetId(whisperId);
-            chatService.sendMessage(message.getRoomId(), message);
+            chatRepository.whisper(message.getRoomId(), message.getTargetId(), message);
             message.setTargetId(principal.getName());
             chatService.sendMessage(message.getRoomId(), message);
         } else {

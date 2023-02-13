@@ -18,7 +18,9 @@ import java.util.*;
 import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.pubsub.RedisSubscriber;
 
-// 추후 DB 와 연결 시 Service 와 Repository(DAO) 로 분리 예정
+/**
+ * redis 관련 소스
+ */
 @RequiredArgsConstructor
 @Repository
 @Slf4j
@@ -177,7 +179,6 @@ public class RedisChatRepository implements ChatRepository {
             redisTemplate.opsForHash().delete(CHAT_ROOMS, roomId);
 
             log.info("삭제 완료 roomId : {}", roomId);
-
         } catch (Exception e) { // 만약에 예외 발생시 확인하기 위해서 try catch
             log.error("deleChatRoom error={}",e.getMessage());
         }

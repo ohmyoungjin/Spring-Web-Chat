@@ -28,6 +28,7 @@ const url = new URL(location.href).searchParams;
 const roomId = url.get('roomId');
 
 function connect(event) {
+    console.log("url >> " , url);
     console.log("connect");
     username = document.querySelector('#name').value.trim();
 

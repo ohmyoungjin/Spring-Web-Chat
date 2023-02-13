@@ -11,7 +11,7 @@ public interface ChatService {
      * @param sender
      * @return
      */
-    String entranceUser(String roomId, String sender);
+    String entranceUser(String roomId, String sender, String UUID);
 
 
     /**

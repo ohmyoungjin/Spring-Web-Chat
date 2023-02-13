@@ -15,9 +15,9 @@ public class ChatServiceImpl implements ChatService{
     private final ChatRepository chatRepository;
 
     @Override
-    public String entranceUser(String roomId, String sender) {
+    public String entranceUser(String roomId, String sender, String UUID) {
         chatRepository.enterChatRoom(roomId);
-        String userUUID = chatRepository.addUser(roomId, sender);
+        String userUUID = chatRepository.addUser(roomId, sender, UUID);
         chatRepository.plusUserCnt(roomId);
         return userUUID;
     }

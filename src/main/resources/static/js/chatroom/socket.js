@@ -17,6 +17,7 @@ var connectingElement = document.querySelector('.connecting');
 
 var stompClient = null;
 var username = null;
+let targetId = null;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -56,7 +57,8 @@ function onConnected() {
     console.log("onConnected");
     // sub 할 url => /sub/chat/room/roomId 로 구독한다
     stompClient.subscribe('/sub/chat/room/' + roomId, onMessageReceived);
-
+    // 귓속말 할 url
+    stompClient.subscribe('/user/queue/wishes', onMessageReceived);
     // 서버에 username 을 가진 유저가 들어왔다는 것을 알림
     // /pub/chat/enterUser 로 메시지를 보냄
     stompClient.send("/pub/chat/enterUser",
@@ -145,7 +147,7 @@ function onError(error) {
 
 // 메시지 전송때는 JSON 형식을 메시지를 전달한다.
 function sendMessage(event) {
-    console.log("");
+    console.log(">>>>>>>>>> sendMesssAGE");
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
@@ -167,7 +169,6 @@ function sendMessage(event) {
 function onMessageReceived(payload) {
     console.log("onMessageReceived");
     var chat = JSON.parse(payload.body);
-
     var messageElement = document.createElement('li');
 
     if (chat.type === 'ENTER') {  // chatType 이 enter 라면 아래 내용

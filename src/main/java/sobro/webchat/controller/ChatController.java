@@ -12,7 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.pubsub.RedisPublisher;
+import sobro.webchat.repository.ChatRepository;
+import sobro.webchat.repository.RedisChatRepository;
 import sobro.webchat.service.ChatService;
+
+import java.security.Principal;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
 // @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다.
@@ -28,19 +32,22 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    private final RedisChatRepository chatRepository;
+
     /**
      * 채팅방 입장
      */
     @MessageMapping("/chat/enterUser")
-    public void enterUser(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public void enterUser(Principal  principal, @Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
 
+        String UUID = principal.getName();
         // 채팅방에 유저 추가 및 UserUUID 반환
-        String userUUID = chatService.entranceUser(message.getRoomId(), message.getSender());
+        String userUUID = chatService.entranceUser(message.getRoomId(), message.getSender(), UUID);
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
         message.setMessage(message.getSender() + " 님 입장!!");
-
+        log.info("headAccessor {}", headerAccessor);
         chatService.sendMessage(message.getRoomId(), message);
     }
 
@@ -48,9 +55,14 @@ public class ChatController {
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
      */
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(@Payload ChatMessage message) {
-        log.info("CHAT {}", message);
+    public void sendMessage(Principal  principal, @Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
+
         message.setMessage(message.getMessage());
+        message.setTargetId("test");
+        log.info("CHAT {}", message);
+        String whisperId = chatRepository.whisper(message.getRoomId(), message.getTargetId());
+        message.setTargetId(whisperId);
+
         chatService.sendMessage(message.getRoomId(), message);
     }
 

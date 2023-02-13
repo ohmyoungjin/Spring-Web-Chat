@@ -113,15 +113,17 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public String addUser(String roomId, String userName){
+    public String addUser(String roomId, String userName, String UUID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        String userUUID = UUID.randomUUID().toString();
+        //String userUUID = UUID.randomUUID().toString();
 
         //userList 에 추가
-        room.getUserlist().put(userUUID, userName);
+        //room.getUserlist().put(userUUID, userName);
+        room.getUserlist().put(userName, UUID);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
 
-        return userUUID;
+        //return userUUID;
+        return UUID;
     }
 
     @Override
@@ -204,6 +206,13 @@ public class RedisChatRepository implements ChatRepository {
     @Override
     public void sendMessage(String roomId, ChatMessage message) {
         ChannelTopic topic = getTopic(roomId);
+        log.info("sendMessage Data={}", message);
         redisPublisher.publish(topic, message);
+    }
+
+    public String whisper(String roomId, String targetId) {
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        String whisperId = room.getUserlist().get(targetId);
+        return whisperId;
     }
 }

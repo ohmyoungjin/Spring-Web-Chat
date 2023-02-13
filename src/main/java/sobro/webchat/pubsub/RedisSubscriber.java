@@ -6,9 +6,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
 import sobro.webchat.dto.ChatMessage;
+import sobro.webchat.dto.ChatRoomDto;
+import sobro.webchat.repository.ChatRepository;
+
+import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,6 +26,8 @@ public class RedisSubscriber implements MessageListener {
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
+
+
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.
@@ -29,8 +39,13 @@ public class RedisSubscriber implements MessageListener {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             // ChatMessage 객채로 맵핑
             ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-            // Websocket 구독자에게 채팅 메시지 Send
-            messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), roomMessage);
+            log.info("roomMessage.getTargetId={}", roomMessage.getTargetId());
+            if (roomMessage.getTargetId() != null) {
+                log.info("여기로 넘어오는데?");
+                messagingTemplate.convertAndSendToUser(roomMessage.getTargetId(), "/queue/wishes", roomMessage);
+            } else {
+                messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), roomMessage);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         }

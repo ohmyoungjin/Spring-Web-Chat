@@ -48,7 +48,7 @@ public interface ChatRepository {
      * @param userName
      * @return
      */
-    String addUser(String roomId, String userName);
+    String addUser(String roomId, String userName, String UUID);
 
     /**
      * 채팅방 유저 닉네임 중복 체크

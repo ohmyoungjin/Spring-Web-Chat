@@ -55,15 +55,20 @@ public class ChatController {
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
      */
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(Principal  principal, @Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
-
-        message.setMessage(message.getMessage());
-        message.setTargetId("test");
+    public void sendMessage(Principal  principal, @Payload ChatMessage message) {
         log.info("CHAT {}", message);
-        String whisperId = chatRepository.whisper(message.getRoomId(), message.getTargetId());
-        message.setTargetId(whisperId);
+        message.setMessage(message.getMessage());
+        if(message.getType() == ChatMessage.MessageType.WHISPER) {
+            System.out.println("귓속말 입니까 ~?");
+            String whisperId = chatRepository.whisper(message.getRoomId(), message.getTargetId());
+            message.setTargetId(whisperId);
+            chatService.sendMessage(message.getRoomId(), message);
+            message.setTargetId(principal.getName());
+            chatService.sendMessage(message.getRoomId(), message);
+        } else {
+            chatService.sendMessage(message.getRoomId(), message);
+        }
 
-        chatService.sendMessage(message.getRoomId(), message);
     }
 
     // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인

@@ -163,7 +163,7 @@ public class RedisChatRepository implements ChatRepository {
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserlist().forEach((key, value) -> list.add(value));
+        room.getUserlist().forEach((key, value) -> list.add(key));
         return list;
     }
 

@@ -151,12 +151,24 @@ function sendMessage(event) {
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
-        var chatMessage = {
-            "roomId": roomId,
-            sender: username,
-            message: messageInput.value,
-            type: 'TALK'
-        };
+        if (targetId == null || targetId == '모두') {
+            var chatMessage = {
+                "roomId": roomId,
+                sender: username,
+                message: messageInput.value,
+                type: 'TALK'
+            };
+        } else {
+            var chatMessage = {
+                "roomId": roomId,
+                sender: username,
+                message: messageInput.value,
+                targetId: targetId,
+                type: 'WHISPER'
+            };
+        }
+
+
 
         stompClient.send("/pub/chat/sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
@@ -318,3 +330,7 @@ function downloadFile(name, dir){
         }
     });
 }
+
+$("select[name=targetId]").change(function (){
+    targetId=$("select[name=targetId] option:selected").text();
+});

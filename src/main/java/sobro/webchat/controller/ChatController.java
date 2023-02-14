@@ -57,10 +57,10 @@ public class ChatController {
     public void sendMessage(Principal  principal, @Payload ChatMessage message) {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
-        if(message.getType() == ChatMessage.MessageType.WHISPER) {
+        if(message.getType() == ChatMessage.MessageType.KICK) {
             chatRepository.whisper(message.getRoomId(), message.getTargetId(), message);
             message.setTargetId(principal.getName());
-            chatService.sendMessage(message.getRoomId(), message);
+            //chatService.sendMessage(message.getRoomId(), message);
         } else {
             chatService.sendMessage(message.getRoomId(), message);
         }

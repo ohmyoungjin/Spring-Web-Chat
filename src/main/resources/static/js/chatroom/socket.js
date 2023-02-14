@@ -29,7 +29,6 @@ const url = new URL(location.href).searchParams;
 const roomId = url.get('roomId');
 
 function connect(event) {
-    console.log("url >> " , url);
     console.log("connect");
     username = document.querySelector('#name').value.trim();
 
@@ -164,7 +163,7 @@ function sendMessage(event) {
                 sender: username,
                 message: messageInput.value,
                 targetId: targetId,
-                type: 'WHISPER'
+                type: 'KICK'
             };
         }
 
@@ -182,7 +181,7 @@ function onMessageReceived(payload) {
     console.log("onMessageReceived");
     var chat = JSON.parse(payload.body);
     var messageElement = document.createElement('li');
-
+    console.log(chat.type)
     if (chat.type === 'ENTER') {  // chatType 이 enter 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
@@ -195,7 +194,26 @@ function onMessageReceived(payload) {
         getUserList();
         getTargetUserList();
 
-    } else { // chatType 이 talk 라면 아래 내용
+    } else if (chat.type === 'WHISPER') { // chatType 이 talk 라면 아래 내용
+        messageElement.classList.add('chat-message');
+
+        var avatarElement = document.createElement('i');
+        var avatarText = document.createTextNode(chat.sender[0]);
+        avatarElement.appendChild(avatarText);
+        avatarElement.style['background-color'] = getAvatarColor(chat.sender);
+
+        messageElement.appendChild(avatarElement);
+
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(chat.sender);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
+    } else if (chat.type === 'KICK') {
+        alert("KICK!!!!");
+        stompClient.disconnect();
+        location.href="/"
+    } else {
+        console.log("ELSE!!");
         messageElement.classList.add('chat-message');
 
         var avatarElement = document.createElement('i');

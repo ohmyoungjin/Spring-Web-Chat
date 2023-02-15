@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
+import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.service.ChatRoomService;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class ChatRoomController {
     // 채팅에 참여한 유저 리스트 반환
     @GetMapping("/chat/userlist")
     @ResponseBody
-    public ArrayList<String> userList(String roomId) {
+    public ArrayList<ChatRoomUserDto> userList(String roomId) {
         return chatRoomService.chatUserList(roomId);
     }
 

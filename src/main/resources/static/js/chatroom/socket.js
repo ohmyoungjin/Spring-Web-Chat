@@ -110,7 +110,7 @@ function getUserList() {
             var users = "";
             for (let i = 0; i < data.length; i++) {
                 //console.log("data[i] : "+data[i]);
-                users += "<li class='dropdown-item'>" + data[i] + "</li>"
+                users += "<li class='dropdown-item'>" + data[i].userNick + "</li>"
             }
             $list.html(users);
         }
@@ -128,11 +128,12 @@ function getTargetUserList() {
             "roomId": roomId
         },
         success: function (data) {
+            console.log('data : ', data);
             var targetUsers = "";
             targetUsers += "<option class='target' value='all'>모두</option>"
             for (let i = 0; i < data.length; i++) {
                 if(data[i] != username){
-                    targetUsers += "<option class='target' value='" + data[i] + "'>" + data[i] + "</option>"
+                    targetUsers += "<option class='target' value='" + data[i].userId + "'>" + data[i].userNick + "</option>"
                 }
             }
             $targetId.html(targetUsers)
@@ -148,7 +149,7 @@ function onError(error) {
 
 // 메시지 전송때는 JSON 형식을 메시지를 전달한다.
 function sendMessage(event) {
-    console.log(">>>>>>>>>> sendMesssAGE");
+    console.log(">>>>>>>>>> sendMesssAGE", targetId);
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
@@ -168,9 +169,11 @@ function sendMessage(event) {
                 userNick: username,
                 message: messageInput.value,
                 targetId: targetId,
-                type: 'WHISPER'
+                type: 'KICK'
             };
-            stompClient.send("/pub/chat/whisperMessage", {}, JSON.stringify(chatMessage));
+            //stompClient.send("/pub/chat/whisperMessage", {}, JSON.stringify(chatMessage));
+            //강제퇴장
+            stompClient.send("/pub/chat/kickUser", {}, JSON.stringify(chatMessage));
         }
 
 
@@ -356,5 +359,5 @@ function downloadFile(name, dir){
 }
 
 $("select[name=targetId]").change(function (){
-    targetId=$("select[name=targetId] option:selected").text();
+    targetId=$("select[name=targetId] option:selected").val();
 });

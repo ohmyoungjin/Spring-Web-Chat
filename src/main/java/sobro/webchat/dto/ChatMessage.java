@@ -28,4 +28,5 @@ public class ChatMessage {
     private String time; // 채팅 발송 시간
     // NULLABLE로 특정사용자에 대해 이벤트를 발생시키기 위한 값.
     private String targetId;
+    private String targetNick;
 }

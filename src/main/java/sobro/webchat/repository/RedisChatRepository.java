@@ -140,9 +140,9 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public void delUser(String roomId, String userUUID){
+    public void delUser(String roomId, String userID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        room.getUserList().remove(userUUID);
+        room.getUserList().remove(userID);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
@@ -153,14 +153,16 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public ArrayList<String> getUserList(String roomId){
-        ArrayList<String> list = new ArrayList<>();
+    public ArrayList<ChatRoomUserDto> getUserList(String roomId){
+        ArrayList<ChatRoomUserDto> list = new ArrayList<>();
 
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserList().forEach((key, value) -> list.add(value.getUserNick()));
+        // 앞단으로 인한 임시 수정
+        // room.getUserList().forEach((key, value) -> list.add(value.getUserNick()));
+        room.getUserList().forEach((key, value) -> list.add(value));
         return list;
     }
 
@@ -227,6 +229,7 @@ public class RedisChatRepository implements ChatRepository {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String kickId = room.getUserList().get(targetId).getStompId();
         message.setTargetId(kickId);
+        log.info("kickId={}", kickId);
         sendMessage(roomId, message);
         //모두에게 메세지를 보내는 type 설정
         message.setType(ChatMessage.MessageType.TALK);

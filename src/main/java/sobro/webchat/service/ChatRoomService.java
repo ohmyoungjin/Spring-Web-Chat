@@ -1,6 +1,7 @@
 package sobro.webchat.service;
 
 import sobro.webchat.dto.ChatRoomDto;
+import sobro.webchat.dto.ChatRoomUserDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public interface ChatRoomService {
      * @param roomId 방 ID
      * @return
      */
-    ArrayList<String> chatUserList(String roomId);
+    ArrayList<ChatRoomUserDto> chatUserList(String roomId);
 
     /**
      * 유저 아이디 검증

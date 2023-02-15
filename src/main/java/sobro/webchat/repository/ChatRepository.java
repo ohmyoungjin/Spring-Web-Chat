@@ -59,9 +59,9 @@ public interface ChatRepository {
     /**
      * 채팅방 유저 삭제
      * @param roomId
-     * @param userUUID
+     * @param userID
      */
-    void delUser(String roomId, String userUUID);
+    void delUser(String roomId, String userID);
 
     /**
      * 채팅방 userName 조회
@@ -76,7 +76,7 @@ public interface ChatRepository {
      * @param roomId
      * @return
      */
-    ArrayList<String> getUserList(String roomId);
+    ArrayList<ChatRoomUserDto> getUserList(String roomId);
 
     /**
      * 채팅방 비밀번호 조회

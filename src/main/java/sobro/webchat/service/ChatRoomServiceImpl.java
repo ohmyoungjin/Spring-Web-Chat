@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sobro.webchat.dto.ChatRoomDto;
+import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.repository.ChatInfoRepository;
 import sobro.webchat.repository.ChatRepository;
 
@@ -41,7 +42,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     }
 
     @Override
-    public ArrayList<String> chatUserList(String roomId) {
+    public ArrayList<ChatRoomUserDto> chatUserList(String roomId) {
         return chatRepository.getUserList(roomId);
     }
 

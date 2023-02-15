@@ -20,6 +20,7 @@ import sobro.webchat.service.ChatService;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
 // @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다.
@@ -60,6 +61,7 @@ public class ChatController {
         chatService.entranceUser(chatRoomUser);
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", UUID);
+        headerAccessor.getSessionAttributes().put("userID", chatRoomUser.getUserId());
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
         message.setMessage(message.getUserNick() + " 님 입장!!");
         chatService.sendMessage(message.getRoomId(), message);
@@ -112,14 +114,14 @@ public class ChatController {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         // stomp 세션에 있던 uuid 와 roomId 를 확인해서 채팅방 유저 리스트와 room 에서 해당 유저를 삭제
-        String userUUID = (String) headerAccessor.getSessionAttributes().get("userUUID");
+        String userUUID = (String)headerAccessor.getSessionAttributes().get("userUUID");
+        String userId = (String)headerAccessor.getSessionAttributes().get("userID");
         String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
 
         log.info("headAccessor {}", headerAccessor);
 
-
         // 채팅방 유저 리스트에서 UUID 유저 닉네임 조회 및 리스트에서 유저 삭제
-        String username = chatService.userLeave(roomId, userUUID);
+        String username = chatService.userLeave(roomId, userId);
 
         if (username != null) {
             log.info("User Disconnected : " + username);

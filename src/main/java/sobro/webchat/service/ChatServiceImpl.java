@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import sobro.webchat.dto.ChatMessage;
+import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.repository.ChatRepository;
 
 @Slf4j
@@ -15,11 +16,10 @@ public class ChatServiceImpl implements ChatService{
     private final ChatRepository chatRepository;
 
     @Override
-    public String entranceUser(String roomId, String sender, String UUID) {
-        chatRepository.enterChatRoom(roomId);
-        String userUUID = chatRepository.addUser(roomId, sender, UUID);
-        chatRepository.plusUserCnt(roomId);
-        return userUUID;
+    public void entranceUser(ChatRoomUserDto chatRoomUser) {
+        chatRepository.enterChatRoom(chatRoomUser.getRoomId());
+        chatRepository.addUser(chatRoomUser);
+        chatRepository.plusUserCnt(chatRoomUser.getRoomId());
     }
 
     @Override

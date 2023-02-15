@@ -21,7 +21,8 @@ public class ChatMessage {
 
     private MessageType type; // 메시지 타입
     private String roomId; // 방 번호
-    private String sender; // 채팅을 보낸 사람
+    private String sender; // 채팅을 보낸 사람 Id
+    private String userNick; // 채팅을 보낸 사람 userName
     private String senderStompId; // 채팅을 보낸 사람에 대한 stomp Id
     private String message; // 메시지
     private String time; // 채팅 발송 시간

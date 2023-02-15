@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.pubsub.RedisSubscriber;
 
@@ -74,9 +75,9 @@ public class RedisChatRepository implements ChatRepository {
                 .roomName(roomName)
                 .roomPwd(roomPwd) // 채팅방 패스워드
                 .secretChk(secretChk) // 채팅방 잠금 여부
-                .userlist(new HashMap<String, String>())
                 .userCount(0) // 채팅방 참여 인원수
                 .maxUserCnt(maxUserCnt) // 최대 인원수 제한
+                .userList(new HashMap<String, ChatRoomUserDto>())
                 .createRoomDate(formatedNow) //방 생성 날짜
                 .build();
         log.info("ChatDto={}" , chatRoomDto);
@@ -113,17 +114,13 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public String addUser(String roomId, String userName, String UUID){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        //String userUUID = UUID.randomUUID().toString();
-
+    public void addUser(ChatRoomUserDto chatRoomUser){
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, chatRoomUser.getRoomId());
+        log.info("addUserId={}",chatRoomUser.getUserId());
+        log.info("addUser={}",chatRoomUser);
         //userList 에 추가
-        //room.getUserlist().put(userUUID, userName);
-        room.getUserlist().put(userName, UUID);
+        room.getUserList().put(chatRoomUser.getUserId(), chatRoomUser);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
-
-        //return userUUID;
-        return UUID;
     }
 
     @Override
@@ -133,7 +130,7 @@ public class RedisChatRepository implements ChatRepository {
 
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
         // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-        while(room.getUserlist().containsValue(tmp)){
+        while(room.getUserList().containsValue(tmp)){
             int ranNum = (int) (Math.random()*100)+1;
 
             tmp = username+ranNum;
@@ -145,14 +142,14 @@ public class RedisChatRepository implements ChatRepository {
     @Override
     public void delUser(String roomId, String userUUID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        room.getUserlist().remove(userUUID);
+        room.getUserList().remove(userUUID);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     @Override
     public String getUserName(String roomId, String userUUID){
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        return room.getUserlist().get(userUUID);
+        return room.getUserList().get(userUUID).getUserNick();
     }
 
     @Override
@@ -163,7 +160,7 @@ public class RedisChatRepository implements ChatRepository {
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserlist().forEach((key, value) -> list.add(key));
+        room.getUserList().forEach((key, value) -> list.add(value.getUserNick()));
         return list;
     }
 
@@ -214,11 +211,11 @@ public class RedisChatRepository implements ChatRepository {
     public void whisper(String roomId, String targetId, ChatMessage message) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         //상대방한테 보내기
-        String whisperTo = room.getUserlist().get(targetId);
+        String whisperTo = room.getUserList().get(targetId).getStompId();
         message.setTargetId(whisperTo);
         sendMessage(roomId, message);
         //나한테 보내기 (귓속말은 본인과 상대방만 보여야 한다)
-        String whisperFrom = room.getUserlist().get(message.getSender());
+        String whisperFrom = room.getUserList().get(message.getSender()).getStompId();
         message.setType(ChatMessage.MessageType.WHISPER);
         message.setTargetId(whisperFrom);
         log.info("whisper sender={}", message.getSender());
@@ -228,7 +225,7 @@ public class RedisChatRepository implements ChatRepository {
     @Override
     public void kickUser(String roomId, String targetId, ChatMessage message) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        String kickId = room.getUserlist().get(targetId);
+        String kickId = room.getUserList().get(targetId).getStompId();
         message.setTargetId(kickId);
         sendMessage(roomId, message);
         //모두에게 메세지를 보내는 type 설정

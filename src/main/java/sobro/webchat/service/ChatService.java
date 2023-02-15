@@ -2,16 +2,16 @@ package sobro.webchat.service;
 
 import org.springframework.data.redis.listener.ChannelTopic;
 import sobro.webchat.dto.ChatMessage;
+import sobro.webchat.dto.ChatRoomUserDto;
 
 public interface ChatService {
 
     /**
      * 채팅방 입장
-     * @param roomId
-     * @param sender
+     * @param chatRoomUserDto 메세지 보낸 유저에 대한 정보
      * @return
      */
-    String entranceUser(String roomId, String sender, String UUID);
+    void entranceUser(ChatRoomUserDto chatRoomUserDto);
 
 
     /**

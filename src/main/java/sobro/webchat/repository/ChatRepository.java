@@ -3,6 +3,7 @@ package sobro.webchat.repository;
 import org.springframework.data.redis.listener.ChannelTopic;
 import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomDto;
+import sobro.webchat.dto.ChatRoomUserDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +45,8 @@ public interface ChatRepository {
     boolean chkRoomUserCnt(String roomId);
     /**
      * 채팅방 유저 리스트 추가
-     * @param roomId
-     * @param userName
-     * @return
      */
-    String addUser(String roomId, String userName, String UUID);
+    void addUser(ChatRoomUserDto chatRoomUser);
 
     /**
      * 채팅방 유저 닉네임 중복 체크

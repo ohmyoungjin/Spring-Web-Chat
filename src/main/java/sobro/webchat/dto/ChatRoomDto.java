@@ -29,6 +29,6 @@ public class ChatRoomDto implements Serializable {
     private String roomPwd; // 채팅방 삭제시 필요한 pwd
     private boolean secretChk; // 채팅방 잠금 여부
 
-    private HashMap<String, String> userlist; //채팅방 입장 인원 리스트
+    private HashMap<String, ChatRoomUserDto> userList; //채팅방 입장 인원 리스트 key : userId value : 유저 상세정보
 
 }

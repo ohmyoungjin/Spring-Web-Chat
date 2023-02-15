@@ -18,7 +18,7 @@ var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
 var username = null;
 let targetId = null;
-
+let userId = null;
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
@@ -31,9 +31,10 @@ const roomId = url.get('roomId');
 function connect(event) {
     console.log("connect");
     username = document.querySelector('#name').value.trim();
+    userId = document.querySelector('#userId').value.trim();
 
     // username 중복 확인
-    isDuplicateName();
+    //isDuplicateName();
 
     // usernamePage 에 hidden 속성 추가해서 가리고
     // chatPage 를 등장시킴
@@ -64,7 +65,8 @@ function onConnected() {
         {},
         JSON.stringify({
             "roomId": roomId,
-            sender: username,
+            sender: userId,
+            userNick: username,
             type: 'ENTER'
         })
     )
@@ -153,7 +155,8 @@ function sendMessage(event) {
         if (targetId == null || targetId == '모두') {
             var chatMessage = {
                 "roomId": roomId,
-                sender: username,
+                sender: userId,
+                userNick: username,
                 message: messageInput.value,
                 type: 'TALK'
             };
@@ -161,7 +164,8 @@ function sendMessage(event) {
         } else {
             var chatMessage = {
                 "roomId": roomId,
-                sender: username,
+                sender: userId,
+                userNick: username,
                 message: messageInput.value,
                 targetId: targetId,
                 type: 'WHISPER'

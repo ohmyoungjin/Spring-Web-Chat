@@ -76,11 +76,10 @@ public class ChatController {
 
     /**
      * 강제 퇴장
-     * @param principal
      * @param message
      */
     @MessageMapping("/chat/kickUser")
-    public void kickUser(Principal  principal, @Payload ChatMessage message) {
+    public void kickUser(@Payload ChatMessage message) {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
         //강제 퇴장 시킬 유저 저장

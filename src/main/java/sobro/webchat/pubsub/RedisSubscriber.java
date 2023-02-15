@@ -39,8 +39,8 @@ public class RedisSubscriber implements MessageListener {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             // ChatMessage 객채로 맵핑
             ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-            log.info("roomMessage.getTargetId={}", roomMessage.getTargetId());
-            if (roomMessage.getTargetId() != null) {
+            //message Type을 통해 특정 유저한테만 message 보내기
+            if (roomMessage.getType() == ChatMessage.MessageType.WHISPER || roomMessage.getType() == ChatMessage.MessageType.KICK) {
                 messagingTemplate.convertAndSendToUser(roomMessage.getTargetId(), "/queue", roomMessage);
             } else {
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), roomMessage);

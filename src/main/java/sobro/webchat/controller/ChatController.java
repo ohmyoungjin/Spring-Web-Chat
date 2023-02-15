@@ -32,8 +32,6 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    private final RedisChatRepository chatRepository;
-
     /**
      * 채팅방 입장
      */
@@ -51,20 +49,44 @@ public class ChatController {
     }
 
     /**
-     * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
+     * 채팅 보내기
+     * @param principal
+     * @param message
      */
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(Principal  principal, @Payload ChatMessage message) {
         log.info("CHAT {}", message);
         message.setMessage(message.getMessage());
-        if(message.getType() == ChatMessage.MessageType.KICK) {
-            chatRepository.whisper(message.getRoomId(), message.getTargetId(), message);
-            message.setTargetId(principal.getName());
-            //chatService.sendMessage(message.getRoomId(), message);
-        } else {
-            chatService.sendMessage(message.getRoomId(), message);
-        }
+        chatService.sendMessage(message.getRoomId(), message);
+    }
 
+    /**
+     * 귓속말
+     * @param principal stomp 연결 됐을 때 생성되는 가상 유저, 이 정보를 가지고 특정 유저를 식별
+     * @param message 전달 받은 메세지
+     */
+    @MessageMapping("/chat/whisperMessage")
+    public void whisperMessage(Principal  principal, @Payload ChatMessage message) {
+        log.info("CHAT {}", message);
+        message.setMessage(message.getMessage());
+        //보낸 사람에 대한 고유 stompId 값 저장
+        message.setSenderStompId(principal.getName());
+        chatService.whisper(message.getRoomId(), message.getTargetId(), message);
+    }
+
+    /**
+     * 강제 퇴장
+     * @param principal
+     * @param message
+     */
+    @MessageMapping("/chat/kickUser")
+    public void kickUser(Principal  principal, @Payload ChatMessage message) {
+        log.info("CHAT {}", message);
+        message.setMessage(message.getMessage());
+        //강제 퇴장 시킬 유저 저장
+        message.setTargetId(message.getTargetId());
+        message.setMessage(message.getTargetId() + " 님이 추방 당하셨습니다.");
+        chatService.kickUser(message.getRoomId(), message.getTargetId(), message);
     }
 
     // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인

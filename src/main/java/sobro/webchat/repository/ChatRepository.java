@@ -118,4 +118,12 @@ public interface ChatRepository {
      * 귓속말 보내기
      */
     void whisper(String roomId, String targetId, ChatMessage chatMessage);
+
+    /**
+     * 강제 퇴장
+     * @param roomId
+     * @param targetId
+     * @param chatMessage
+     */
+    void kickUser(String roomId, String targetId, ChatMessage chatMessage);
 }

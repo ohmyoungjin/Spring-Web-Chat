@@ -157,19 +157,21 @@ function sendMessage(event) {
                 message: messageInput.value,
                 type: 'TALK'
             };
+            stompClient.send("/pub/chat/sendMessage", {}, JSON.stringify(chatMessage));
         } else {
             var chatMessage = {
                 "roomId": roomId,
                 sender: username,
                 message: messageInput.value,
                 targetId: targetId,
-                type: 'KICK'
+                type: 'WHISPER'
             };
+            stompClient.send("/pub/chat/whisperMessage", {}, JSON.stringify(chatMessage));
         }
 
 
 
-        stompClient.send("/pub/chat/sendMessage", {}, JSON.stringify(chatMessage));
+
         messageInput.value = '';
     }
     event.preventDefault();

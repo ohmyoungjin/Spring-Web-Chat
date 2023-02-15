@@ -214,8 +214,26 @@ public class RedisChatRepository implements ChatRepository {
     public void whisper(String roomId, String targetId, ChatMessage message) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         //상대방한테 보내기
-        String whisperId = room.getUserlist().get(targetId);
-        message.setTargetId(whisperId);
+        String whisperTo = room.getUserlist().get(targetId);
+        message.setTargetId(whisperTo);
+        sendMessage(roomId, message);
+        //나한테 보내기 (귓속말은 본인과 상대방만 보여야 한다)
+        String whisperFrom = room.getUserlist().get(message.getSender());
+        message.setTargetId(whisperFrom);
+        log.info("whisper sender={}", message.getSender());
+        sendMessage(roomId, message);
+    }
+
+    @Override
+    public void kickUser(String roomId, String targetId, ChatMessage message) {
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        String kickId = room.getUserlist().get(targetId);
+        message.setTargetId(kickId);
+        sendMessage(roomId, message);
+        //추방 시킬 유저 이외에 전달을 위한 targetId null 처리
+        message.setTargetId(null);
+        //모두에게 메세지를 보내는 type 설정
+        message.setType(ChatMessage.MessageType.TALK);
         sendMessage(roomId, message);
     }
 }

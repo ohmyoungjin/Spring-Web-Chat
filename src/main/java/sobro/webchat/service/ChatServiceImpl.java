@@ -40,5 +40,9 @@ public class ChatServiceImpl implements ChatService{
         chatRepository.whisper(roomId, targetId, chatMessage);
     }
 
+    @Override
+    public void kickUser(String roomId, String targetId, ChatMessage chatMessage) {
+        chatRepository.kickUser(roomId, targetId, chatMessage);
+    }
 
 }

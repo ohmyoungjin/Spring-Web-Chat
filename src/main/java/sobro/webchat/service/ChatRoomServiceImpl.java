@@ -52,7 +52,12 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     }
 
     @Override
-    public void roomDelete(String roomId) {
+    public void deleteRoom(String roomId) {
         chatRepository.delChatRoom(roomId);
+    }
+
+    @Override
+    public void deleteRooms() {
+        chatRepository.delChatRooms();
     }
 }

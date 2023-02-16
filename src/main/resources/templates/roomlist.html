@@ -16,6 +16,7 @@
           integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
           crossorigin="anonymous">
     <script src="/js/roomlist/bootstrap-show-password.min.js"></script>
+    <script src="/js/chatroom/socket.js"></script>
     <script th:inline="javascript">
 
         let roomId;
@@ -168,6 +169,10 @@
             location.href = "/chat/delRoom/"+roomId;
         }
 
+        function delAllRoom() {
+            location.href = "/chat/delAllRoom";
+        }
+
         // 채팅방 입장 시 인원 수에 따라서 입장 여부 결정
         function chkRoomUserCnt(roomId){
             let chk;
@@ -267,7 +272,8 @@
             </th:block>
 
         </table>
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomModal">방 생성</button>
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#roomModal">방생성</button>
+        <button type="button" class="btn btn-info" onclick="delAllRoom()">방전체삭제</button>
     </div>
 </div>
 

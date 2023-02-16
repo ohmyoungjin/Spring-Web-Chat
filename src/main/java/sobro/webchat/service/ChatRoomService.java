@@ -38,10 +38,15 @@ public interface ChatRoomService {
     String DuplicateName(String roomId, String userName);
 
     /**
-     * 채팅방 삭제
+     * 선택된 방 채팅방 삭제
      * @param roomId
      * @return
      */
-    void roomDelete(String roomId);
+    void deleteRoom(String roomId);
 
+    /**
+     * 채팅방 삭제
+     * @return
+     */
+    void deleteRooms();
 }

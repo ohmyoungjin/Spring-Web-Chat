@@ -233,4 +233,15 @@ public class RedisChatRepository implements ChatRepository {
         message.setType(ChatMessage.MessageType.TALK);
         sendMessage(roomId, message);
     }
+
+    @Override
+    public void delChatRooms() {
+        List<ChatRoomDto> room = opsHashChatRoom.values(CHAT_ROOMS);
+        System.out.println("채팅 리스트 >> " + room);
+        for(int i=0; i<room.size(); i++) {
+            System.out.println("모냐 >> " + room.get(i).getRoomId());
+            redisTemplate.opsForHash().delete(CHAT_ROOMS, room.get(i).getRoomId());
+        }
+
+    }
 }

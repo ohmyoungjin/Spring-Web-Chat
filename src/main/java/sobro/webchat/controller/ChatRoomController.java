@@ -65,14 +65,22 @@ public class ChatRoomController {
         return "chatroom";
     }
 
-    // 채팅에 참여한 유저 리스트 반환
+    /**
+     * 채팅에 참여한 유저 리스트 반환
+     * @param roomId 방 이름
+     */
     @GetMapping("/chat/userlist/{roomId}")
     @ResponseBody
     public ArrayList<ChatRoomUserDto> getUserListInRoom(@PathVariable String roomId) {
         return chatRoomService.chatUserList(roomId);
     }
 
-    // 채팅에 참여한 유저 닉네임 중복 확인
+    /**
+     * 채팅에 참여한 유저 닉네임 중복 확인
+     * @param roomId
+     * @param username
+     * @return
+     */
     @GetMapping("/chat/duplicateName/{roomId}")
     @ResponseBody
     public String hasDuplicateNameInRoom(@PathVariable String roomId, @RequestParam("username") String username) {
@@ -84,10 +92,27 @@ public class ChatRoomController {
         return userName;
     }
 
+    /**
+     * 선택된 방 채팅방 삭제
+     * @param model
+     * @param roomId
+     * @return
+     */
     @GetMapping("/chat/delRoom/{roomId}")
     public String deleteRoom(Model model, @PathVariable String roomId){
-        chatRoomService.roomDelete(roomId);
+        chatRoomService.deleteRoom(roomId);
         log.info("채팅방 삭제={}", roomId);
+        return "redirect:/";
+    }
+
+    /**
+     * 채팅방 모두 삭제
+     * @return
+     */
+    @GetMapping("/chat/delAllRoom")
+    public String deleteRooms(){
+        chatRoomService.deleteRooms();
+        log.info("채팅방 전체 삭제");
         return "redirect:/";
     }
 }

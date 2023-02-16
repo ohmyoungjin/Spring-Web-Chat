@@ -124,4 +124,9 @@ public interface ChatRepository {
      * @param chatMessage
      */
     void kickUser(String roomId, String targetId, ChatMessage chatMessage);
+
+    /**
+     * 모든 방 삭제
+     */
+    void delChatRooms();
 }

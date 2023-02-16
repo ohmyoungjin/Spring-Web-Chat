@@ -211,14 +211,14 @@ function onMessageReceived(payload) {
         messageElement.classList.add('chat-message');
 
         var avatarElement = document.createElement('i');
-        var avatarText = document.createTextNode(chat.sender[0]);
+        var avatarText = document.createTextNode(chat.userNick[0]);
         avatarElement.appendChild(avatarText);
-        avatarElement.style['background-color'] = getAvatarColor(chat.sender);
+        avatarElement.style['background-color'] = getAvatarColor(chat.userNick);
 
         messageElement.appendChild(avatarElement);
 
         var usernameElement = document.createElement('span');
-        var usernameText = document.createTextNode(chat.sender);
+        var usernameText = document.createTextNode(chat.userNick);
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
     } else if (chat.type === 'KICK') {
@@ -230,14 +230,14 @@ function onMessageReceived(payload) {
         messageElement.classList.add('chat-message');
 
         var avatarElement = document.createElement('i');
-        var avatarText = document.createTextNode(chat.sender[0]);
+        var avatarText = document.createTextNode(chat.userNick[0]);
         avatarElement.appendChild(avatarText);
-        avatarElement.style['background-color'] = getAvatarColor(chat.sender);
+        avatarElement.style['background-color'] = getAvatarColor(chat.userNick);
 
         messageElement.appendChild(avatarElement);
 
         var usernameElement = document.createElement('span');
-        var usernameText = document.createTextNode(chat.sender);
+        var usernameText = document.createTextNode(chat.userNick);
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
     }

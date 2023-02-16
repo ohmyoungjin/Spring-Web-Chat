@@ -24,9 +24,13 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-// roomId 파라미터 가져오기
-const url = new URL(location.href).searchParams;
-const roomId = url.get('roomId');
+// roomId 파라미터 가져오기 restApi 변경
+//const url = new URL(location.href).searchParams;
+//const roomId = url.get('roomId');
+const url = new URL(location.href).pathname;
+const roomId = url.replace('/chat/room/','');
+
+
 
 function connect(event) {
     console.log("connect");
@@ -54,7 +58,7 @@ function connect(event) {
 }
 
 function onConnected() {
-    console.log("onConnected");
+    console.log("onConnected url : ", roomId);
     // sub 할 url => /sub/chat/room/roomId 로 구독한다
     stompClient.subscribe('/sub/chat/room/' + roomId, onMessageReceived);
     // 귓속말 할 url
@@ -80,7 +84,7 @@ function isDuplicateName() {
     console.log("isDuplicateName");
     $.ajax({
         type: "GET",
-        url: "/chat/duplicateName",
+        url: "/chat/duplicateName/"+roomId,
         data: {
             "username": username,
             "roomId": roomId
@@ -102,7 +106,7 @@ function getUserList() {
 
     $.ajax({
         type: "GET",
-        url: "/chat/userlist",
+        url: "/chat/userlist/"+roomId,
         data: {
             "roomId": roomId
         },
@@ -123,7 +127,7 @@ function getTargetUserList() {
 
     $.ajax({
         type: "GET",
-        url: "/chat/userlist",
+        url: "/chat/userlist/"+roomId,
         data: {
             "roomId": roomId
         },
@@ -169,11 +173,11 @@ function sendMessage(event) {
                 userNick: username,
                 message: messageInput.value,
                 targetId: targetId,
-                type: 'KICK'
+                type: 'WHISPER'
             };
-            //stompClient.send("/pub/chat/whisperMessage", {}, JSON.stringify(chatMessage));
+            stompClient.send("/pub/chat/whisperMessage", {}, JSON.stringify(chatMessage));
             //강제퇴장
-            stompClient.send("/pub/chat/kickUser", {}, JSON.stringify(chatMessage));
+            //stompClient.send("/pub/chat/kickUser", {}, JSON.stringify(chatMessage));
         }
 
 

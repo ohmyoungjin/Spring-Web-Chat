@@ -160,8 +160,6 @@ public class RedisChatRepository implements ChatRepository {
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        // 앞단으로 인한 임시 수정
-        // room.getUserList().forEach((key, value) -> list.add(value.getUserNick()));
         room.getUserList().forEach((key, value) -> list.add(value));
         return list;
     }

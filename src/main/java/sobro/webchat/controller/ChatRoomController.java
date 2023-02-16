@@ -56,8 +56,8 @@ public class ChatRoomController {
     // 채팅방 입장 화면
     // 파라미터로 넘어오는 roomId 를 확인후 해당 roomId 를 기준으로
     // 채팅방을 찾아서 클라이언트를 chatroom 으로 보낸다.
-    @GetMapping("/chat/room")
-    public String roomDetail(Model model, String roomId){
+    @GetMapping("/chat/room/{roomId}")
+    public String roomDetail(@PathVariable  String roomId, Model model){
         ChatRoomDto room = chatRoomService.chatRoomDetail(roomId);
         log.info("roomId {}", roomId);
         model.addAttribute("room", room);
@@ -65,16 +65,16 @@ public class ChatRoomController {
     }
 
     // 채팅에 참여한 유저 리스트 반환
-    @GetMapping("/chat/userlist")
+    @GetMapping("/chat/userlist/{roomId}")
     @ResponseBody
-    public ArrayList<ChatRoomUserDto> userList(String roomId) {
+    public ArrayList<ChatRoomUserDto> userList(@PathVariable String roomId) {
         return chatRoomService.chatUserList(roomId);
     }
 
     // 채팅에 참여한 유저 닉네임 중복 확인
-    @GetMapping("/chat/duplicateName")
+    @GetMapping("/chat/duplicateName/{roomId}")
     @ResponseBody
-    public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
+    public String isDuplicateName(@PathVariable String roomId, @RequestParam("username") String username) {
 
         // 유저 이름 확인
         String userName = chatRoomService.DuplicateName(roomId, username);

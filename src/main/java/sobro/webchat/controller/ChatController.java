@@ -106,7 +106,10 @@ public class ChatController {
         chatService.kickUser(message.getRoomId(), message.getTargetId(), message);
     }
 
-    // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
+    /**
+     * 유저 퇴장
+     * @param event
+     */
     @EventListener
     public void webSocketDisconnectListener(SessionDisconnectEvent event) {
         log.info("DisConnEvent {}", event);
@@ -114,7 +117,6 @@ public class ChatController {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         // stomp 세션에 있던 uuid 와 roomId 를 확인해서 채팅방 유저 리스트와 room 에서 해당 유저를 삭제
-        String userUUID = (String)headerAccessor.getSessionAttributes().get("userUUID");
         String userId = (String)headerAccessor.getSessionAttributes().get("userID");
         String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
 

@@ -136,7 +136,7 @@ function getTargetUserList() {
             var targetUsers = "";
             targetUsers += "<option class='target' value='all'>모두</option>"
             for (let i = 0; i < data.length; i++) {
-                if(data[i] != username){
+                if(data[i].userNick != username){
                     targetUsers += "<option class='target' value='" + data[i].userId + "'>" + data[i].userNick + "</option>"
                 }
             }
@@ -153,7 +153,7 @@ function onError(error) {
 
 // 메시지 전송때는 JSON 형식을 메시지를 전달한다.
 function sendMessage(event) {
-    console.log(">>>>>>>>>> sendMesssAGE", targetId);
+    console.log(">>>>>>>>>> sendMessage", targetId);
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {

@@ -5,24 +5,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "CHAT_ROOM")
 public class ChatRoomInfo {
 
     @Id @GeneratedValue
     @Column(name = "CHAT_ROOM_ID")
     private Long id;
     //추후 방 번호로 변경 예정
-//    @Column(name = "CHAT_ROOM_NUM")
-//    private String roomNum;
+    @Column(name = "CHAT_ROOM_NUM")
+    private String roomNum;
     @Column(name = "CHAT_ROOM_NAME")
     private String roomName; // 채팅방 이름
     private int maxUserCnt; // 채팅방 최대 인원 제한

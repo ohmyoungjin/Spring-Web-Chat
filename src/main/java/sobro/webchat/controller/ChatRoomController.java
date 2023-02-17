@@ -65,16 +65,14 @@ public class ChatRoomController {
         return "chatroom";
     }
 
-<<<<<<< HEAD
+
     // 채팅에 참여한 유저 리스트 반환
-    @GetMapping("/chat/userList/{roomId}")
-=======
+
     /**
      * 채팅에 참여한 유저 리스트 반환
      * @param roomId 방 이름
      */
-    @GetMapping("/chat/userlist/{roomId}")
->>>>>>> 46afaeaf476f3f9c2288e4687758b35cceb4b94b
+    @GetMapping("/chat/userList/{roomId}")
     @ResponseBody
     public ArrayList<ChatRoomUserDto> getUserListInRoom(@PathVariable String roomId) {
         return chatRoomService.chatUserList(roomId);

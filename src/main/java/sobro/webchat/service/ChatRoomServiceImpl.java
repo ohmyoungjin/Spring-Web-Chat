@@ -32,7 +32,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         //방 init
         ChatRoomDto chatRoom = chatRepository.createChatRoom(roomName, roomPwd, secret, maxUserCnt);
         //방 정보 DB 저장
-        chatInfoRepository.insertChatRoomInfo(chatRoom);
+        chatInfoRepository.createChatRoomInfo(chatRoom);
         return chatRoom;
     }
 

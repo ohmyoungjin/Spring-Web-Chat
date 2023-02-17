@@ -47,7 +47,8 @@ public class JpaChatInfoRepository implements ChatInfoRepository{
         ChatRoomUserInfo chatRoomUserInfo = ChatRoomUserInfo.builder()
                 .chatRoomInfo(chatRoomInfo)
                 .userId(chatRoomUserDto.getUserId())
-                .userLevel(chatRoomUserDto.getUserNick())
+                .stompId(chatRoomUserDto.getStompId())
+                .userNick(chatRoomUserDto.getUserNick())
                 .enterUserDate(chatRoomUserDto.getCreateUserEnterDate())
                 .build();
         em.persist(chatRoomUserInfo);

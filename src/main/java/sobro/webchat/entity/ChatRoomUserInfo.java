@@ -18,6 +18,8 @@ public class ChatRoomUserInfo {
     @Id @GeneratedValue
     @Column(name = "CHAT_ROOM_USER_ID")
     private Long id;
+    @Column(name = "CHAT_ROOM_USER_SESSION")
+    private String stompId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CHAT_ROOM_NUM")

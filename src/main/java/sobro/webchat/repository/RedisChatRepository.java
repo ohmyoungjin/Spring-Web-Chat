@@ -32,7 +32,7 @@ public class RedisChatRepository implements ChatRepository {
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
     // Redis
-    private static final String CHAT_ROOMS = "TEST_ROOM";
+    private static final String CHAT_ROOMS = "0217 0220,";
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
@@ -218,11 +218,11 @@ public class RedisChatRepository implements ChatRepository {
         message.setType(ChatMessage.MessageType.WHISPER);
         message.setTargetId(whisperFrom);
         log.info("whisper sender={}", message.getSender());
-        message.setMessage("[["+targetNick+"]]님에게 귓속말: "+ originalMessage);
+        message.setMessage("["+targetNick+"]님에게 귓속말: "+ originalMessage);
         sendMessage(roomId, message);
 
         //귓속말 메세지 처리
-        message.setMessage("[["+message.getUserNick()+"]]님의 귓속말: "+originalMessage);
+        message.setMessage("["+message.getUserNick()+"]님의 귓속말: "+originalMessage);
         //상대방한테 보내기
         String whisperTo = room.getUserList().get(targetId).getStompId();
         message.setTargetId(whisperTo);
@@ -244,9 +244,7 @@ public class RedisChatRepository implements ChatRepository {
     @Override
     public void delChatRooms() {
         List<ChatRoomDto> room = opsHashChatRoom.values(CHAT_ROOMS);
-        System.out.println("채팅 리스트 >> " + room);
         for(int i=0; i<room.size(); i++) {
-            System.out.println("모냐 >> " + room.get(i).getRoomId());
             redisTemplate.opsForHash().delete(CHAT_ROOMS, room.get(i).getRoomId());
         }
     }
@@ -255,7 +253,6 @@ public class RedisChatRepository implements ChatRepository {
     public String findNickNameById(String roomId, String targetId) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String nickName = room.getUserList().get(targetId).getUserNick();
-        System.out.println("targetId 가져옴 > > " + nickName);
         return nickName;
     }
 }

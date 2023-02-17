@@ -222,7 +222,7 @@ public class RedisChatRepository implements ChatRepository {
         sendMessage(roomId, message);
 
         //귓속말 메세지 처리
-        message.setMessage("[["+message.getSender()+"]]님의 귓속말: "+originalMessage);
+        message.setMessage("[["+message.getUserNick()+"]]님의 귓속말: "+originalMessage);
         //상대방한테 보내기
         String whisperTo = room.getUserList().get(targetId).getStompId();
         message.setTargetId(whisperTo);

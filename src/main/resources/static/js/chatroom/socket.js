@@ -287,7 +287,6 @@ function getAvatarColor(messageSender) {
     return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
 
 /// 파일 업로드 부분 ////
@@ -361,6 +360,19 @@ function downloadFile(name, dir){
         }
     });
 }
+
+$("#enterChatRoom").click(function () {
+    let inputUserId = document.getElementById("userId");
+    let inputUserName = document.getElementById("name");
+    if(inputUserId.value.length == 0 || inputUserId.value.trim() == null) { // 입력 값이 없거나 null인 경우
+        alert("아이디를 입력하세요.");
+        return false;
+    } else if (inputUserName.value.length == 0 || inputUserName.value == null) {
+        alert("닉네임을 입력하세요.");
+        return false;
+    }
+    usernameForm.addEventListener('submit', connect, true)
+});
 
 $("select[name=targetId]").change(function (){
     targetId=$("select[name=targetId] option:selected").val();

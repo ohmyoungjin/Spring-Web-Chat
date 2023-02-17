@@ -129,4 +129,9 @@ public interface ChatRepository {
      * 모든 방 삭제
      */
     void delChatRooms();
+
+    /**
+     * 타겟아이디로 해당 유저 닉네임 찾기
+     */
+    String findNickNameById(String roomId, String targetId);
 }

@@ -210,15 +210,22 @@ public class RedisChatRepository implements ChatRepository {
     @Override
     public void whisper(String roomId, String targetId, ChatMessage message) {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        //상대방한테 보내기
-        String whisperTo = room.getUserList().get(targetId).getStompId();
-        message.setTargetId(whisperTo);
-        sendMessage(roomId, message);
+        String originalMessage = message.getMessage();
+        String targetNick = findNickNameById(roomId, targetId);
+
         //나한테 보내기 (귓속말은 본인과 상대방만 보여야 한다)
         String whisperFrom = room.getUserList().get(message.getSender()).getStompId();
         message.setType(ChatMessage.MessageType.WHISPER);
         message.setTargetId(whisperFrom);
         log.info("whisper sender={}", message.getSender());
+        message.setMessage("[["+targetNick+"]]님에게 귓속말: "+ originalMessage);
+        sendMessage(roomId, message);
+
+        //귓속말 메세지 처리
+        message.setMessage("[["+message.getSender()+"]]님의 귓속말: "+originalMessage);
+        //상대방한테 보내기
+        String whisperTo = room.getUserList().get(targetId).getStompId();
+        message.setTargetId(whisperTo);
         sendMessage(roomId, message);
     }
 
@@ -242,6 +249,13 @@ public class RedisChatRepository implements ChatRepository {
             System.out.println("모냐 >> " + room.get(i).getRoomId());
             redisTemplate.opsForHash().delete(CHAT_ROOMS, room.get(i).getRoomId());
         }
+    }
 
+    @Override
+    public String findNickNameById(String roomId, String targetId) {
+        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        String nickName = room.getUserList().get(targetId).getUserNick();
+        System.out.println("targetId 가져옴 > > " + nickName);
+        return nickName;
     }
 }

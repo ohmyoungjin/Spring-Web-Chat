@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.model.ChatRoom;
+import sobro.webchat.repository.RedisChatRepository;
 import sobro.webchat.service.ChatRoomService;
 
 import java.util.ArrayList;
@@ -20,17 +21,19 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-
+    private final RedisChatRepository repository;
     /**
      * 채팅 리스트
      * @param model
      */
     @GetMapping("/")
     public String getRoomList(Model model){
-        List<ChatRoom> roomList = chatRoomService.roomList();
+        List<ChatRoomDto> roomList = chatRoomService.roomList();
+        //ChatRoomDto roomList = repository.findTest();
+        log.info("SHOW ALL ChatList {}", roomList);
         model.addAttribute("list", roomList);
 
-        log.info("SHOW ALL ChatList {}", roomList);
+
         return "roomlist";
     }
 

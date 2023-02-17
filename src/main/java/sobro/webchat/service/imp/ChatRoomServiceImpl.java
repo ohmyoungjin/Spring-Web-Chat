@@ -31,8 +31,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatInfoRepository chatInfoRepository;
 
     @Override
-    public List<ChatRoom> roomList() {
-        return chatRepository.findAllRoom();
+    public List<ChatRoomDto> roomList() {
+        return chatRepository.findAllRoom()
+                .stream().map(ChatRoomDto::fromModel).collect(Collectors.toList());
+        //return chatRepository.findAllRoom();
     }
 
     @Override

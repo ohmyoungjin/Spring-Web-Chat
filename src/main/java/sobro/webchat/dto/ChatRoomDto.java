@@ -55,16 +55,15 @@ public class ChatRoomDto {
                 .build();
     }
 
-//    public ChatRoomDto fromModel(ChatRoom chatRoom) {
-//        return ChatRoomDto.builder()
-//                .roomId(chatRoom.getRoomId())
-//                .roomName(chatRoom.getRoomName())
-//                .maxUserCnt(chatRoom.getMaxUserCnt())
-//                .createRoomDate(chatRoom.getCreateRoomDate())
-//                .roomPwd(chatRoom.getRoomPwd())
-//                .secretChk(chatRoom.isSecretChk())
-//                .userCount(chatRoom.getUserCount())
-//                .userList()
-//                .build();
-//    }
+    public static ChatRoomDto fromModel(ChatRoom chatRoom) {
+        return ChatRoomDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .roomName(chatRoom.getRoomName())
+                .maxUserCnt(chatRoom.getMaxUserCnt())
+                .createRoomDate(chatRoom.getCreateRoomDate())
+                .roomPwd(chatRoom.getRoomPwd())
+                .secretChk(chatRoom.isSecretChk())
+                .userCount(chatRoom.getUserCount())
+                .build();
+    }
 }

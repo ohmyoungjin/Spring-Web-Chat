@@ -50,11 +50,31 @@ public class RedisChatRepository implements ChatRepository {
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
     }
+    public ChatRoomDto findTest() {
+        try {
+            List<ChatRoom> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
+            ChatRoom chatRoom = chatRooms.get(0);
+            return ChatRoomDto.builder()
+                    .roomId(chatRoom.getRoomId())
+                    .roomName(chatRoom.getRoomName())
+                    .maxUserCnt(chatRoom.getMaxUserCnt())
+                    .secretChk(chatRoom.isSecretChk())
+                    .userCount(chatRoom.getUserCount())
+                    .build();
+        } catch (Exception e){
+            return null;
+        }
 
+    }
     @Override
     public List<ChatRoom> findAllRoom() {
-        List<ChatRoom> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
-        return chatRooms;
+        try {
+            List<ChatRoom> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
+            return chatRooms;
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface ChatRoomService {
     /**
      * 전체 채팅방 리스트
      */
-    List<ChatRoom> roomList();
+    List<ChatRoomDto> roomList();
 
     /**
      * 방 생성

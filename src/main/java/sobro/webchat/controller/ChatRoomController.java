@@ -21,7 +21,7 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final RedisChatRepository repository;
+
     /**
      * 채팅 리스트
      * @param model
@@ -29,7 +29,6 @@ public class ChatRoomController {
     @GetMapping("/")
     public String getRoomList(Model model){
         List<ChatRoomDto> roomList = chatRoomService.roomList();
-        //ChatRoomDto roomList = repository.findTest();
         log.info("SHOW ALL ChatList {}", roomList);
         model.addAttribute("list", roomList);
 
@@ -51,7 +50,6 @@ public class ChatRoomController {
 
         log.info("CREATE Chat Room [{}]", room);
 
-        //rttr.addFlashAttribute("roomName", room);
         return "redirect:/";
     }
 

@@ -253,7 +253,6 @@
                     </td>
                     <td th:if="${!room.secretChk}">
                         <!-- thymeleaf 의 변수를 onclick 에 넣는 방법 -->
-                        <!--<a th:href="@{/chat/room(roomId=${room.roomId})}" th:roomId="${room.roomId}" onclick="return chkRoomUserCnt(this.getAttribute('roomId'));">[[${room.roomName}]]</a>-->
                         <a th:href="@{/chat/room/{roomId}(roomId=${room.roomId})}" th:roomId="${room.roomId}" onclick="return chkRoomUserCnt(this.getAttribute('roomId'));">[[${room.roomName}]]</a>
                     </td>
                     <td>

@@ -48,7 +48,7 @@ public class ChatRoomController {
 
         log.info("CREATE Chat Room [{}]", room);
 
-        rttr.addFlashAttribute("roomName", room);
+        //rttr.addFlashAttribute("roomName", room);
         return "redirect:/";
     }
 

@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import sobro.webchat.dto.ChatRoomUserDto;
+import sobro.webchat.model.ChatRoom;
 import sobro.webchat.pubsub.RedisPublisher;
 import sobro.webchat.pubsub.RedisSubscriber;
 
@@ -32,9 +33,9 @@ public class RedisChatRepository implements ChatRepository {
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
     // Redis
-    private static final String CHAT_ROOMS = "0217 0220,";
+    private static final String CHAT_ROOMS = "TEST_ROOM";
     private final RedisTemplate<String, Object> redisTemplate;
-    private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
+    private HashOperations<String, String, ChatRoom> opsHashChatRoom;
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
     //message 전달 template 정보를 가진 class
@@ -51,58 +52,42 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public List<ChatRoomDto> findAllRoom() {
-        List<ChatRoomDto> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
+    public List<ChatRoom> findAllRoom() {
+        List<ChatRoom> chatRooms = opsHashChatRoom.values(CHAT_ROOMS);
         return chatRooms;
     }
 
     @Override
-    public ChatRoomDto findRoomById(String id) {
+    public ChatRoom findRoomById(String id) {
         return opsHashChatRoom.get(CHAT_ROOMS, id);
     }
 
     @Override
-    public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt){
-        // roomName 와 roomPwd 로 chatRoom 빌드 후 return
-        // 현재 날짜 구하기
-        LocalDate now = LocalDate.now();
-        // 포맷 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        String formatedNow = now.format(formatter);
+    public ChatRoom createChatRoom(ChatRoom chatRoom){
 
-        ChatRoomDto chatRoomDto = ChatRoomDto.builder()
-                .roomId(UUID.randomUUID().toString())
-                .roomName(roomName)
-                .roomPwd(roomPwd) // 채팅방 패스워드
-                .secretChk(secretChk) // 채팅방 잠금 여부
-                .userCount(0) // 채팅방 참여 인원수
-                .maxUserCnt(maxUserCnt) // 최대 인원수 제한
-                .userList(new HashMap<String, ChatRoomUserDto>())
-                .createRoomDate(formatedNow) //방 생성 날짜
-                .build();
-        log.info("ChatDto={}" , chatRoomDto);
-        // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장
-        opsHashChatRoom.put(CHAT_ROOMS, chatRoomDto.getRoomId(), chatRoomDto);
-        return chatRoomDto;
+        log.info("ChatDto={}" , chatRoom);
+        // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장
+        opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
+        return chatRoom;
     }
 
     @Override
     public void plusUserCnt(String roomId){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()+1);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     @Override
     public void minusUserCnt(String roomId){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.setUserCount(room.getUserCount()-1);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     @Override
     public boolean chkRoomUserCnt(String roomId){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
 
         log.info("참여인원 확인 [{}, {}]", room.getUserCount(), room.getMaxUserCnt());
 
@@ -115,17 +100,17 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public void addUser(ChatRoomUserDto chatRoomUser){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, chatRoomUser.getRoomId());
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, chatRoomUser.getRoomId());
         log.info("addUserId={}",chatRoomUser.getUserId());
         log.info("addUser={}",chatRoomUser);
         //userList 에 추가
-        room.getUserList().put(chatRoomUser.getUserId(), chatRoomUser);
+        //room.getUserList().put(chatRoomUser.getUserId(), chatRoomUser);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     @Override
     public String isDuplicateName(String roomId, String username){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String tmp = username;
 
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
@@ -141,14 +126,14 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public void delUser(String roomId, String userID){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         room.getUserList().remove(userID);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);
     }
 
     @Override
     public String getUserName(String roomId, String userUUID){
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return room.getUserList().get(userUUID).getUserNick();
     }
 
@@ -156,17 +141,17 @@ public class RedisChatRepository implements ChatRepository {
     public ArrayList<ChatRoomUserDto> getUserList(String roomId){
         ArrayList<ChatRoomUserDto> list = new ArrayList<>();
 
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserList().forEach((key, value) -> list.add(value));
+        //room.getUserList().forEach((key, value) -> list.add(value));
         return list;
     }
 
     @Override
     public boolean confirmPwd(String roomId, String roomPwd) {
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         return roomPwd.equals(room.getRoomPwd());
     }
 
@@ -174,7 +159,7 @@ public class RedisChatRepository implements ChatRepository {
     public void delChatRoom(String roomId) {
         try {
             // 채팅방 삭제
-            ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+            ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
             redisTemplate.opsForHash().delete(CHAT_ROOMS, roomId);
 
             log.info("삭제 완료 roomId : {}", roomId);
@@ -209,7 +194,7 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public void whisper(String roomId, String targetId, ChatMessage message) {
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String originalMessage = message.getMessage();
         String targetNick = findNickNameById(roomId, targetId);
 
@@ -231,7 +216,7 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public void kickUser(String roomId, String targetId, ChatMessage message) {
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String kickId = room.getUserList().get(targetId).getStompId();
         message.setTargetId(kickId);
         log.info("kickId={}", kickId);
@@ -243,7 +228,7 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public void delChatRooms() {
-        List<ChatRoomDto> room = opsHashChatRoom.values(CHAT_ROOMS);
+        List<ChatRoom> room = opsHashChatRoom.values(CHAT_ROOMS);
         for(int i=0; i<room.size(); i++) {
             redisTemplate.opsForHash().delete(CHAT_ROOMS, room.get(i).getRoomId());
         }
@@ -251,7 +236,7 @@ public class RedisChatRepository implements ChatRepository {
 
     @Override
     public String findNickNameById(String roomId, String targetId) {
-        ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
+        ChatRoom room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
         String nickName = room.getUserList().get(targetId).getUserNick();
         return nickName;
     }

@@ -1,4 +1,4 @@
-package sobro.webchat.service;
+package sobro.webchat.service.imp;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +9,12 @@ import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.repository.ChatInfoRepository;
 import sobro.webchat.repository.ChatRepository;
+import sobro.webchat.service.ChatService;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatInfoRepository chatInfoRepository;
@@ -25,7 +26,7 @@ public class ChatServiceImpl implements ChatService{
         chatRepository.enterChatRoom(chatRoomUser.getRoomId());
         chatRepository.addUser(chatRoomUser);
         chatRepository.plusUserCnt(chatRoomUser.getRoomId());
-        chatInfoRepository.enterUser(chatRoomUser);
+        //chatInfoRepository.enterUser(chatRoomUser);
     }
 
     @Override

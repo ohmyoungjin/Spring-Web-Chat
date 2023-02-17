@@ -7,9 +7,9 @@ import sobro.webchat.entity.ChatRoomInfo;
 public interface ChatInfoRepository {
     /**
      * 방 생성 DB Insert
-     * @param chatRoomDto
+     * @param chatRoomInfo
      */
-    void createChatRoomInfo(ChatRoomDto chatRoomDto);
+    void createChatRoomInfo(ChatRoomInfo chatRoomInfo);
 
     /**
      *  방 찾기

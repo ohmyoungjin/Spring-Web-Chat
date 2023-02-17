@@ -4,6 +4,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.dto.ChatRoomUserDto;
+import sobro.webchat.model.ChatRoom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +13,15 @@ public interface ChatRepository {
     /**
      * 모든 채팅방 리스트 확인
      */
-    List<ChatRoomDto> findAllRoom();
+    List<ChatRoom> findAllRoom();
     /**
      * 이름으로 방 찾기
      */
-    ChatRoomDto findRoomById(String id);
+    ChatRoom findRoomById(String id);
     /**
      * 채팅방 생성
-     * @param roomName 방 이름
-     * @param roomPwd 방 비밀번호
-     * @param secretChk 방 잠금 여부
-     * @param maxUserCnt 방 최대 인원
-     * @return
      */
-    ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt);
+    ChatRoom createChatRoom(ChatRoom chatRoom);
     /**
      * 채팅방 인원수 증가
      * @param roomId

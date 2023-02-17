@@ -2,6 +2,7 @@ package sobro.webchat.service;
 
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.dto.ChatRoomUserDto;
+import sobro.webchat.model.ChatRoom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,12 @@ public interface ChatRoomService {
     /**
      * 전체 채팅방 리스트
      */
-    List<ChatRoomDto> roomList();
+    List<ChatRoom> roomList();
 
     /**
      * 방 생성
      */
-    ChatRoomDto createRoom(String roomName, String roomPwd, boolean secret, int maxUserCnt);
+    ChatRoom createRoom(ChatRoomDto chatRoomDto);
 
     /**
      * 채팅방 입장 화면

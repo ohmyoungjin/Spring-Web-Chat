@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import sobro.webchat.entity.ChatRoomInfo;
+import sobro.webchat.model.ChatRoom;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,17 +14,15 @@ import java.util.UUID;
 
 
 /**
- * REDIS 저장되는 방에 대한 DTO
- * serialVersionUID 로 해시 코드 생성
+ * view => controller 객체
  */
-@Data
+@Getter
+@Setter
 @Builder
-public class ChatRoomDto implements Serializable {
-
-    private static final long serialVersionUID = 6494678977089006639L;
+public class ChatRoomDto {
 
     private String roomId; // 채팅방 아이디
-    private String roomName; // 채팅방 이름 
+    private String roomName; // 채팅방 이름
     private int userCount; // 채팅방 인원수
     private int maxUserCnt; // 채팅방 최대 인원 제한
     private String createRoomDate; // 채팅방 생성 날짜
@@ -31,4 +31,37 @@ public class ChatRoomDto implements Serializable {
 
     private HashMap<String, ChatRoomUserDto> userList; //채팅방 입장 인원 리스트 key : userId value : 유저 상세정보
 
+    public ChatRoomInfo toEntity() {
+        return ChatRoomInfo.builder()
+                .roomId(roomId)
+                .roomName(roomName)
+                .maxUserCnt(maxUserCnt)
+                .createRoomDate(createRoomDate)
+                .roomPwd(roomPwd)
+                .secretChk(secretChk)
+                .build();
+    }
+
+    public ChatRoom toModel() {
+        return ChatRoom.builder()
+                .roomId(UUID.randomUUID().toString())
+                .maxUserCnt(maxUserCnt)
+                .createRoomDate(createRoomDate)
+                .roomPwd(roomPwd)
+                .secretChk(secretChk)
+                .build();
+    }
+
+//    public ChatRoomDto fromModel(ChatRoom chatRoom) {
+//        return ChatRoomDto.builder()
+//                .roomId(chatRoom.getRoomId())
+//                .roomName(chatRoom.getRoomName())
+//                .maxUserCnt(chatRoom.getMaxUserCnt())
+//                .createRoomDate(chatRoom.getCreateRoomDate())
+//                .roomPwd(chatRoom.getRoomPwd())
+//                .secretChk(chatRoom.isSecretChk())
+//                .userCount(chatRoom.getUserCount())
+//                .userList()
+//                .build();
+//    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.dto.ChatRoomUserDto;
+import sobro.webchat.model.ChatRoom;
 import sobro.webchat.service.ChatRoomService;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ChatRoomController {
      */
     @GetMapping("/")
     public String getRoomList(Model model){
-        List<ChatRoomDto> roomList = chatRoomService.roomList();
+        List<ChatRoom> roomList = chatRoomService.roomList();
         model.addAttribute("list", roomList);
 
         log.info("SHOW ALL ChatList {}", roomList);
@@ -35,17 +36,15 @@ public class ChatRoomController {
 
     /**
      * 채팅방 생성
-     * @param name 방 이름
-     * @param roomPwd 방 비밀번호
-     * @param secretChk 잠금 여부
-     * @param maxUserCnt 참여 인원
+     * @param chatRoomDto
+     * @param rttr
+     * @return
      */
     @PostMapping("/chat/createroom")
-    public String createRoom(@RequestParam("roomName") String name, @RequestParam("roomPwd")String roomPwd, @RequestParam("secretChk")String secretChk,
-                             @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {
-
+    public String createRoom(@ModelAttribute("ChatRoomDto") ChatRoomDto chatRoomDto, RedirectAttributes rttr) {
         // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
-        ChatRoomDto room = chatRoomService.createRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
+        log.info("CreateChatRoomDto={}", chatRoomDto);
+        ChatRoom room = chatRoomService.createRoom(chatRoomDto);
 
         log.info("CREATE Chat Room [{}]", room);
 

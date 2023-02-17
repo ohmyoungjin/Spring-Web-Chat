@@ -20,15 +20,7 @@ public class JpaChatInfoRepository implements ChatInfoRepository{
 
 
     @Override
-    public void createChatRoomInfo(ChatRoomDto chatRoomDto) {
-        ChatRoomInfo chatRoomInfo = ChatRoomInfo.builder()
-                .roomName(chatRoomDto.getRoomName())
-                .roomNum(chatRoomDto.getRoomId())
-                .maxUserCnt(chatRoomDto.getMaxUserCnt())
-                .createRoomDate(chatRoomDto.getCreateRoomDate())
-                .roomPwd(chatRoomDto.getRoomPwd())
-                .secretChk(chatRoomDto.isSecretChk())
-                .build();
+    public void createChatRoomInfo(ChatRoomInfo chatRoomInfo) {
         em.persist(chatRoomInfo);
     }
 

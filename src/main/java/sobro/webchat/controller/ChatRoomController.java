@@ -66,7 +66,7 @@ public class ChatRoomController {
     }
 
     // 채팅에 참여한 유저 리스트 반환
-    @GetMapping("/chat/userlist/{roomId}")
+    @GetMapping("/chat/userList/{roomId}")
     @ResponseBody
     public ArrayList<ChatRoomUserDto> getUserListInRoom(@PathVariable String roomId) {
         return chatRoomService.chatUserList(roomId);

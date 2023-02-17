@@ -106,7 +106,7 @@ function getUserList() {
 
     $.ajax({
         type: "GET",
-        url: "/chat/userlist/"+roomId,
+        url: "/chat/userList/"+roomId,
         data: {
             "roomId": roomId
         },
@@ -127,7 +127,7 @@ function getTargetUserList() {
 
     $.ajax({
         type: "GET",
-        url: "/chat/userlist/"+roomId,
+        url: "/chat/userList/"+roomId,
         data: {
             "roomId": roomId
         },

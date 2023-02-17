@@ -13,6 +13,7 @@ public class JpaChatInfoRepository implements ChatInfoRepository{
 
     private final EntityManager em;
 
+
     @Override
     public void insertChatRoomInfo(ChatRoomDto chatRoomDto) {
         ChatRoomInfo chatRoomInfo = ChatRoomInfo.builder()

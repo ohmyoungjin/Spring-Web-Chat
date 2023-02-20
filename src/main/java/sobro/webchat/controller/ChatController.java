@@ -44,24 +44,10 @@ public class ChatController {
         //STOMP 연결되면서 생성 되는 가상 유저 (SESSION 같은 느낌)
         String UUID = principal.getName();
 
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        String formatedNow = now.format(formatter);
-
-        // 채팅에 들어온 유저 세팅
-        ChatRoomUserDto chatRoomUser = ChatRoomUserDto.builder()
-                .roomId(message.getRoomId())
-                .userId(message.getSender())
-                .stompId(UUID)
-                .userNick(message.getUserNick())
-                .createUserEnterDate(formatedNow)
-                .build();
-
-
-        chatService.entranceUser(chatRoomUser);
+        chatService.entranceUser(UUID, message);
         // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", UUID);
-        headerAccessor.getSessionAttributes().put("userID", chatRoomUser.getUserId());
+        headerAccessor.getSessionAttributes().put("userID", message.getSender());
         headerAccessor.getSessionAttributes().put("roomId", message.getRoomId());
         message.setMessage(message.getUserNick() + " 님 입장!!");
         chatService.sendMessage(message.getRoomId(), message);
@@ -115,6 +101,8 @@ public class ChatController {
         log.info("DisConnEvent {}", event);
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        //연결 끊긴 Code
+        int DisconnectCode = event.getCloseStatus().getCode();
 
         // stomp 세션에 있던 uuid 와 roomId 를 확인해서 채팅방 유저 리스트와 room 에서 해당 유저를 삭제
         String userId = (String)headerAccessor.getSessionAttributes().get("userID");
@@ -135,6 +123,10 @@ public class ChatController {
                     .roomId(roomId)
                     .build();
             chatService.sendMessage(chat.getRoomId(), chat);
+        }
+
+        if(DisconnectCode != 1000) {
+            //비정상적인 Disconnect 이후 재연결 및 후처리
         }
     }
 }

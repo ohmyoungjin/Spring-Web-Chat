@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import sobro.webchat.entity.ChatRoomInfo;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,4 +32,15 @@ public class ChatRoomDto implements Serializable {
 
     private HashMap<String, ChatRoomUserDto> userList; //채팅방 입장 인원 리스트 key : userId value : 유저 상세정보
 
+
+    public ChatRoomInfo toEntity() {
+        return ChatRoomInfo.builder()
+                .roomNum(roomId)
+                .roomName(roomName)
+                .secretChk(secretChk)
+                .roomPwd(roomPwd)
+                .maxUserCnt(maxUserCnt)
+                .createRoomDate(createRoomDate)
+                .build();
+    }
 }

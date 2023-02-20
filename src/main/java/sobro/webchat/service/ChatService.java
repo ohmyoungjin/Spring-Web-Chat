@@ -8,10 +8,10 @@ public interface ChatService {
 
     /**
      * 채팅방 입장
-     * @param chatRoomUserDto 메세지 보낸 유저에 대한 정보
+     * @param UUID, message
      * @return
      */
-    void entranceUser(ChatRoomUserDto chatRoomUserDto);
+    void entranceUser(String UUID, ChatMessage message);
 
 
     /**

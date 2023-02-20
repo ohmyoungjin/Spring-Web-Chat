@@ -3,13 +3,14 @@ package sobro.webchat.repository;
 import sobro.webchat.dto.ChatRoomDto;
 import sobro.webchat.dto.ChatRoomUserDto;
 import sobro.webchat.entity.ChatRoomInfo;
+import sobro.webchat.entity.ChatRoomUserInfo;
 
 public interface ChatInfoRepository {
     /**
      * 방 생성 DB Insert
-     * @param chatRoomDto
+     * @param chatRoomInfo
      */
-    void createChatRoomInfo(ChatRoomDto chatRoomDto);
+    void createChatRoomInfo(ChatRoomInfo chatRoomInfo);
 
     /**
      *  방 찾기
@@ -19,5 +20,5 @@ public interface ChatInfoRepository {
     /**
      * 유저 입장 DB Insert
      */
-    void enterUser(ChatRoomUserDto chatRoomUserDto);
+    void enterUser(ChatRoomUserInfo chatRoomUserInfo);
 }

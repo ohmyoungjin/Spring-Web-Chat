@@ -62,28 +62,10 @@ public class RedisChatRepository implements ChatRepository {
     }
 
     @Override
-    public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt){
-        // roomName 와 roomPwd 로 chatRoom 빌드 후 return
-        // 현재 날짜 구하기
-        LocalDate now = LocalDate.now();
-        // 포맷 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        String formatedNow = now.format(formatter);
-
-        ChatRoomDto chatRoomDto = ChatRoomDto.builder()
-                .roomId(UUID.randomUUID().toString())
-                .roomName(roomName)
-                .roomPwd(roomPwd) // 채팅방 패스워드
-                .secretChk(secretChk) // 채팅방 잠금 여부
-                .userCount(0) // 채팅방 참여 인원수
-                .maxUserCnt(maxUserCnt) // 최대 인원수 제한
-                .userList(new HashMap<String, ChatRoomUserDto>())
-                .createRoomDate(formatedNow) //방 생성 날짜
-                .build();
+    public void createChatRoom(ChatRoomDto chatRoomDto){
         log.info("ChatDto={}" , chatRoomDto);
         // map 에 채팅룸 아이디와 만들어진 채팅룸을 저장장
         opsHashChatRoom.put(CHAT_ROOMS, chatRoomDto.getRoomId(), chatRoomDto);
-        return chatRoomDto;
     }
 
     @Override
@@ -118,6 +100,7 @@ public class RedisChatRepository implements ChatRepository {
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, chatRoomUser.getRoomId());
         log.info("addUserId={}",chatRoomUser.getUserId());
         log.info("addUser={}",chatRoomUser);
+        log.info("addUser room={}", room);
         //userList 에 추가
         room.getUserList().put(chatRoomUser.getUserId(), chatRoomUser);
         opsHashChatRoom.put(CHAT_ROOMS, room.getRoomId(), room);

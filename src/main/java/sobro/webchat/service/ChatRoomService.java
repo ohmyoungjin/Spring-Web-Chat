@@ -16,7 +16,7 @@ public interface ChatRoomService {
     /**
      * 방 생성
      */
-    ChatRoomDto createRoom(String roomName, String roomPwd, boolean secret, int maxUserCnt);
+    void createRoom(String roomName, String roomPwd, boolean secret, int maxUserCnt);
 
     /**
      * 채팅방 입장 화면

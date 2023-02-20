@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "CHAT_ROOM_USER")
+@Table(name = "CHAT_ROOM_USER_INFO")
 public class ChatRoomUserInfo {
 
     @Id @GeneratedValue
@@ -22,7 +22,7 @@ public class ChatRoomUserInfo {
     private String stompId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CHAT_ROOM_NUM")
+    @JoinColumn(name = "CHAT_ROOM_ID")
     private ChatRoomInfo chatRoomInfo;
 
     private String userId;

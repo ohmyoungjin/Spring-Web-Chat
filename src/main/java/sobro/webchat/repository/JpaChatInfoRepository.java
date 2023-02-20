@@ -20,15 +20,7 @@ public class JpaChatInfoRepository implements ChatInfoRepository{
 
 
     @Override
-    public void createChatRoomInfo(ChatRoomDto chatRoomDto) {
-        ChatRoomInfo chatRoomInfo = ChatRoomInfo.builder()
-                .roomName(chatRoomDto.getRoomName())
-                .roomNum(chatRoomDto.getRoomId())
-                .maxUserCnt(chatRoomDto.getMaxUserCnt())
-                .createRoomDate(chatRoomDto.getCreateRoomDate())
-                .roomPwd(chatRoomDto.getRoomPwd())
-                .secretChk(chatRoomDto.isSecretChk())
-                .build();
+    public void createChatRoomInfo(ChatRoomInfo chatRoomInfo) {
         em.persist(chatRoomInfo);
     }
 
@@ -36,21 +28,12 @@ public class JpaChatInfoRepository implements ChatInfoRepository{
         List<ChatRoomInfo> chatRoomInfoList = em.createQuery("select c from ChatRoomInfo c where c.roomNum = :roomId", ChatRoomInfo.class)
                 .setParameter("roomId", roomId)
                 .getResultList();
-        log.info("찾은 roomNum={}  : ", chatRoomInfoList.get(0));
+        log.info("찾은 roomNum={}  : ", chatRoomInfoList.get(0).getRoomNum());
         return chatRoomInfoList.get(0);
     }
 
     @Override
-    public void enterUser(ChatRoomUserDto chatRoomUserDto) {
-        ChatRoomInfo chatRoomInfo = findRoomById(chatRoomUserDto.getRoomId());
-
-        ChatRoomUserInfo chatRoomUserInfo = ChatRoomUserInfo.builder()
-                .chatRoomInfo(chatRoomInfo)
-                .userId(chatRoomUserDto.getUserId())
-                .stompId(chatRoomUserDto.getStompId())
-                .userNick(chatRoomUserDto.getUserNick())
-                .enterUserDate(chatRoomUserDto.getCreateUserEnterDate())
-                .build();
+    public void enterUser(ChatRoomUserInfo chatRoomUserInfo) {
         em.persist(chatRoomUserInfo);
     }
 }

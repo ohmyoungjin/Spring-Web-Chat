@@ -7,8 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomUserDto;
+import sobro.webchat.entity.ChatRoomInfo;
+import sobro.webchat.entity.ChatRoomUserInfo;
 import sobro.webchat.repository.ChatInfoRepository;
 import sobro.webchat.repository.ChatRepository;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -21,11 +26,28 @@ public class ChatServiceImpl implements ChatService{
 
     @Override
     @Transactional
-    public void entranceUser(ChatRoomUserDto chatRoomUser) {
+    public void entranceUser(String UUID, ChatMessage message) {
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String formatedNow = now.format(formatter);
+
+        // 채팅에 들어온 유저 세팅
+        ChatRoomUserDto chatRoomUser = ChatRoomUserDto.builder()
+                .roomId(message.getRoomId())
+                .userId(message.getSender())
+                .stompId(UUID)
+                .userNick(message.getUserNick())
+                .createUserEnterDate(formatedNow)
+                .build();
+
         chatRepository.enterChatRoom(chatRoomUser.getRoomId());
         chatRepository.addUser(chatRoomUser);
         chatRepository.plusUserCnt(chatRoomUser.getRoomId());
-        chatInfoRepository.enterUser(chatRoomUser);
+
+        //입장한 방에 대한 정보
+        ChatRoomInfo chatRoom = chatInfoRepository.findRoomById(chatRoomUser.getRoomId());
+        ChatRoomUserInfo chatRoomUserInfo = chatRoomUser.toEntity(chatRoom);
+        chatInfoRepository.enterUser(chatRoomUserInfo);
     }
 
     @Override

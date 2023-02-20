@@ -43,13 +43,7 @@ public class ChatRoomController {
     @PostMapping("/chat/createroom")
     public String createRoom(@RequestParam("roomName") String name, @RequestParam("roomPwd")String roomPwd, @RequestParam("secretChk")String secretChk,
                              @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {
-
-        // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
-        ChatRoomDto room = chatRoomService.createRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
-
-        log.info("CREATE Chat Room [{}]", room);
-
-        rttr.addFlashAttribute("roomName", room);
+        chatRoomService.createRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
         return "redirect:/";
     }
 

@@ -19,13 +19,8 @@ public interface ChatRepository {
     ChatRoomDto findRoomById(String id);
     /**
      * 채팅방 생성
-     * @param roomName 방 이름
-     * @param roomPwd 방 비밀번호
-     * @param secretChk 방 잠금 여부
-     * @param maxUserCnt 방 최대 인원
-     * @return
      */
-    ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt);
+    void createChatRoom(ChatRoomDto chatRoomDto);
     /**
      * 채팅방 인원수 증가
      * @param roomId

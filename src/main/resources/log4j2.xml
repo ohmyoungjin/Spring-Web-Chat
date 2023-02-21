@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="INFO">
+
+    <Properties>
+        <Property name="consoleLayout">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg%n</Property>
+        <Property name="fileLayout">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg%n</Property>
+        <!--window-->
+        <Property name="appFilePath">C:/tmp/logs/chat/app</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${consoleLayout}" />
+        </Console>
+        <RollingFile name="file" fileName="${appFilePath}/CHAT_SERVER.log" filePattern="${appFilePath}/%d{yyyyMMdd}/CHAT_SERVER.log.%d{yyyyMMddHH}.log">
+            <PatternLayout pattern="${fileLayout}" />
+            <Policies>
+                <OnStartupTriggeringPolicy minSize="0"/>
+                <CronTriggeringPolicy schedule="0 0 * * * ?" evaluateOnStartup="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Root>
+        <!-- 스프링 프레임워크에서 찍는건 level을 info로 설정 -->
+        <Logger name="org.springframework" level="info" additivity="false" >
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+        <!-- rolling file에는 debug, console에는 info 분리하여 처리 가능하다. -->
+        <Logger name="sobro.webchat" additivity="false" >
+            <AppenderRef ref="console" level="info" />
+            <AppenderRef ref="file" level="info" />
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -11,8 +11,6 @@ import sobro.webchat.dto.ChatMessage;
 import sobro.webchat.dto.ChatRoomDto;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import sobro.webchat.dto.ChatRoomUserDto;
@@ -32,7 +30,7 @@ public class RedisChatRepository implements ChatRepository {
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
     // Redis
-    private static final String CHAT_ROOMS = "0217 0220,";
+    private static final String CHAT_ROOMS = "TEST_KEY";
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoomDto> opsHashChatRoom;
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
@@ -140,7 +138,6 @@ public class RedisChatRepository implements ChatRepository {
         ArrayList<ChatRoomUserDto> list = new ArrayList<>();
 
         ChatRoomDto room = opsHashChatRoom.get(CHAT_ROOMS, roomId);
-        log.info("UserList >>> {}", room);
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
         room.getUserList().forEach((key, value) -> list.add(value));

@@ -6,17 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MimeTypeUtils;
 import sobro.webchat.dto.ChatMessage;
-import sobro.webchat.dto.ChatRoomDto;
-import sobro.webchat.repository.ChatRepository;
 
-import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor

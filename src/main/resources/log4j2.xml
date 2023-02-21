@@ -5,7 +5,9 @@
         <Property name="consoleLayout">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg%n</Property>
         <Property name="fileLayout">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg%n</Property>
         <!--window-->
-        <Property name="appFilePath">C:/tmp/logs/chat/app</Property>
+        <!--<Property name="appFilePath">C:/tmp/logs/chat/app</Property>-->
+        <!-- linux -->
+        <Property name="appFilePath">/home/secuser/app/platformChatServer</Property>
     </Properties>
 
     <Appenders>

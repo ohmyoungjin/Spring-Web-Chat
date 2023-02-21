@@ -123,7 +123,7 @@ function getUserList() {
 
 function getTargetUserList() {
     console.log("getTargetUserList");
-    const $targetId = $("#targetId");
+    let $targetId = $("#targetId");
 
     $.ajax({
         type: "GET",
@@ -157,7 +157,7 @@ function sendMessage(event) {
     var messageContent = messageInput.value.trim();
 
     if (messageContent && stompClient) {
-        if (targetId == null || targetId == '모두') {
+        if (targetId == null || targetId == 'all') {
             var chatMessage = {
                 "roomId": roomId,
                 sender: userId,

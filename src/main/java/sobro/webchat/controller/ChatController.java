@@ -3,7 +3,6 @@ package sobro.webchat.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -11,16 +10,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import sobro.webchat.dto.ChatMessage;
-import sobro.webchat.dto.ChatRoomUserDto;
-import sobro.webchat.pubsub.RedisPublisher;
-import sobro.webchat.repository.ChatRepository;
-import sobro.webchat.repository.RedisChatRepository;
 import sobro.webchat.service.ChatService;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 
 // 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
 // @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다.
@@ -126,7 +118,8 @@ public class ChatController {
         }
 
         if(DisconnectCode != 1000) {
-            //비정상적인 Disconnect 이후 재연결 및 후처리
+            //비정상적인 종료로 인한 재연결 처리 및 로그 남기기 (재연결은 추후 필요에 따른 개발 예정)
+            log.error("Disconnect Error={}{}", userId, event);
         }
     }
 }

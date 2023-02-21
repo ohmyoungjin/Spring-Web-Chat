@@ -1,22 +1,20 @@
 package sobro.webchat.dto;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import sobro.webchat.entity.ChatRoomInfo;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
 
 
 /**
  * REDIS 저장되는 방에 대한 DTO
  * serialVersionUID 로 해시 코드 생성
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class ChatRoomDto implements Serializable {
 

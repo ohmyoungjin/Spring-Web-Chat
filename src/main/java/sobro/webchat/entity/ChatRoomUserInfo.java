@@ -21,9 +21,10 @@ public class ChatRoomUserInfo {
     @Column(name = "CHAT_ROOM_USER_SESSION")
     private String stompId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CHAT_ROOM_ID")
-    private ChatRoomInfo chatRoomInfo;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "CHAT_ROOM_ID")
+//    private ChatRoomInfo chatRoomInfo;
+    private String roomId;
 
     private String userId;
     private String userNick;

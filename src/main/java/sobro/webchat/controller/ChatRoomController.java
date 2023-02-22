@@ -40,7 +40,7 @@ public class ChatRoomController {
      * @param secretChk 잠금 여부
      * @param maxUserCnt 참여 인원
      */
-    @PostMapping("/chat/createroom")
+    @PostMapping("/chat/createRoom")
     public String createRoom(@RequestParam("roomName") String name, @RequestParam("roomPwd")String roomPwd, @RequestParam("secretChk")String secretChk,
                              @RequestParam(value = "maxUserCnt", defaultValue = "100")String maxUserCnt,  RedirectAttributes rttr) {
         chatRoomService.createRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));

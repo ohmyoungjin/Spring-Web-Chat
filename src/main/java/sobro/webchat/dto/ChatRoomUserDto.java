@@ -22,8 +22,7 @@ public class ChatRoomUserDto implements Serializable {
 
     public ChatRoomUserInfo toEntity(ChatRoomInfo chatRoomInfo) {
         return ChatRoomUserInfo.builder()
-                //.chatRoomInfo(chatRoomInfo)
-                .roomId(roomId)
+                .chatRoomInfo(chatRoomInfo)
                 .userId(userId)
                 .stompId(stompId)
                 .userNick(userNick)
